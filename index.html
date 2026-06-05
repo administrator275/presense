@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Presense</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0f1117;
+    --ink-soft: #3d4152;
+    --ink-muted: #8b90a0;
+    --surface: #f7f6f2;
+    --surface-warm: #f0ede6;
+    --white: #ffffff;
+    --teal: #1a7f6e;
+    --teal-light: #d4ede9;
+    --teal-mid: #2aa68f;
+    --amber: #d97706;
+    --amber-light: #fef3c7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --border: #e2dfd8;
+    --shadow: 0 2px 12px rgba(15,17,23,0.08);
+    --shadow-lg: 0 8px 32px rgba(15,17,23,0.12);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* AUTH SCREEN */
+  .auth-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-wrap::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(26,127,110,0.25) 0%, transparent 70%);
+    top: -100px; right: -100px;
+  }
+  .auth-wrap::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(42,166,143,0.15) 0%, transparent 70%);
+    bottom: -80px; left: -80px;
+  }
+  .auth-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 48px 44px;
+    width: 420px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+  }
+  .auth-logo {
+    margin-bottom: 32px;
+  }
+  .auth-logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--teal);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-icon svg { width: 20px; height: 20px; }
+  .logo-name {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+  }
+  .auth-tagline {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-weight: 300;
+  }
+  .auth-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+  }
+  .field input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .field input:focus { border-color: var(--teal); background: var(--white); }
+  .btn-primary {
+    width: 100%;
+    padding: 13px;
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-primary:hover { background: #166b5c; }
+  .btn-primary:active { transform: scale(0.99); }
+  .btn-primary:disabled { background: var(--ink-muted); cursor: not-allowed; }
+  .auth-error {
+    background: var(--red-light);
+    color: var(--red);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  /* APP SHELL */
+  .app-shell { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px;
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    z-index: 100;
+  }
+  .sidebar-header {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .sidebar-logo-name {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    color: var(--white);
+    font-weight: 400;
+    letter-spacing: -0.3px;
+  }
+  .sidebar-role-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .role-doctor { background: var(--teal-light); color: var(--teal); }
+  .role-ccl { background: var(--amber-light); color: var(--amber); }
+
+  .sidebar-nav { flex: 1; padding: 16px 12px; }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: rgba(255,255,255,0.55);
+    font-size: 14px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 2px;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+  .nav-item.active { background: var(--teal); color: var(--white); }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-user {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+  }
+  .user-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-email { font-size: 11px; color: rgba(255,255,255,0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .btn-signout {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.5);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .btn-signout:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+
+  /* MAIN CONTENT */
+  .main { margin-left: 240px; padding: 32px 36px; flex: 1; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .page-subtitle { font-size: 14px; color: var(--ink-muted); }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .card-body { padding: 22px; }
+
+  /* STATS ROW */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+  }
+  .stat-label { font-size: 12px; font-weight: 500; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-value { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 400; color: var(--ink); line-height: 1; margin-bottom: 4px; }
+  .stat-sub { font-size: 12px; color: var(--ink-muted); }
+  .stat-teal .stat-value { color: var(--teal); }
+  .stat-amber .stat-value { color: var(--amber); }
+
+  /* PATIENT LIST */
+  .patient-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+  .patient-row {
+    background: var(--white);
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .patient-row:hover { background: var(--surface); }
+  .patient-row:first-child { border-radius: 14px 14px 0 0; }
+  .patient-row:last-child { border-radius: 0 0 14px 14px; }
+  .patient-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--teal-light);
+    color: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .patient-info { flex: 1; }
+  .patient-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .patient-meta { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
+  .patient-actions { display: flex; align-items: center; gap: 8px; }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-amber { background: var(--amber-light); color: #92400e; }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-gray { background: #f3f4f6; color: #6b7280; }
+  .badge-teal { background: var(--teal-light); color: var(--teal); }
+
+  /* BRIEF VIEW */
+  .brief-section { margin-bottom: 20px; }
+  .brief-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+  .brief-content {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.65;
+    border-left: 3px solid var(--teal);
+  }
+  .brief-content.flag { border-left-color: var(--amber); }
+  .brief-content.red-flag { border-left-color: var(--red); }
+  .brief-empty {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* FORMS */
+  .form-group { margin-bottom: 18px; }
+  .form-label { display: block; font-size: 12px; font-weight: 500; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+  .form-input, .form-textarea, .form-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--white);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--teal); }
+  .form-textarea { resize: vertical; min-height: 90px; }
+  .form-select { cursor: pointer; }
+
+  .btn-teal {
+    padding: 10px 20px;
+    background: var(--teal);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-teal:hover { background: #166b5c; }
+  .btn-teal:disabled { background: var(--ink-muted); cursor: not-allowed; }
+
+  .btn-outline {
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--ink-soft); color: var(--ink); }
+
+  .btn-sm {
+    padding: 6px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,17,23,0.5);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+  }
+  .modal {
+    background: var(--white);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-header {
+    padding: 22px 26px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .modal-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; color: var(--ink); }
+  .modal-close {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--surface);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-muted);
+    font-size: 18px;
+    line-height: 1;
+    transition: background 0.15s;
+  }
+  .modal-close:hover { background: var(--border); }
+  .modal-body { padding: 24px 26px; }
+  .modal-footer { padding: 16px 26px 22px; display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; background: var(--surface-warm); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+  .tab {
+    flex: 1; padding: 8px 16px;
+    border: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer;
+    color: var(--ink-muted);
+    background: transparent;
+    transition: all 0.15s;
+  }
+  .tab.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* LOADING */
+  .loading { display: flex; align-items: center; justify-content: center; padding: 48px; color: var(--ink-muted); font-size: 14px; gap: 10px; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 48px 24px; }
+  .empty-icon { font-size: 36px; margin-bottom: 12px; }
+  .empty-title { font-size: 15px; font-weight: 500; color: var(--ink-soft); margin-bottom: 6px; }
+  .empty-sub { font-size: 13px; color: var(--ink-muted); }
+
+  /* SUCCESS */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--ink);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    z-index: 2000;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ANALYTICS */
+  .analytics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+  .progress-bar-wrap { background: var(--surface); border-radius: 6px; height: 8px; overflow: hidden; margin-top: 8px; }
+  .progress-bar-fill { height: 100%; border-radius: 6px; background: var(--teal); transition: width 0.5s ease; }
+  .sentiment-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .sentiment-label { font-size: 13px; color: var(--ink-soft); width: 80px; }
+  .sentiment-bar { flex: 1; background: var(--surface); border-radius: 6px; height: 8px; overflow: hidden; }
+  .sentiment-fill-positive { height: 100%; border-radius: 6px; background: #10b981; }
+  .sentiment-fill-neutral { height: 100%; border-radius: 6px; background: #6b7280; }
+  .sentiment-fill-concerned { height: 100%; border-radius: 6px; background: var(--amber); }
+  .sentiment-count { font-size: 12px; color: var(--ink-muted); width: 30px; text-align: right; }
+
+  .section-gap { margin-bottom: 24px; }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 200px; }
+    .main { margin-left: 200px; padding: 24px; }
+    .stats-row { grid-template-columns: 1fr; }
+    .analytics-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, orderBy, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyALRPfClv-IXL4serb30gWY-cqZ18TVWx0",
+  authDomain: "presense-67850.firebaseapp.com",
+  projectId: "presense-67850",
+  storageBucket: "presense-67850.firebasestorage.app",
+  messagingSenderId: "183044888871",
+  appId: "1:183044888871:web:0517ec3371c9322b9a3102"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── STATE ──────────────────────────────────────────────
+let state = {
+  user: null,
+  userProfile: null,
+  loading: true,
+  page: 'dashboard',
+  patients: [],
+  doctors: [],
+  selectedPatient: null,
+  modal: null,
+  toast: null,
+  briefForm: { mindState: '', suggestedFraming: '', flag: '', flagLevel: 'none' },
+  patientForm: { name: '', age: '', condition: '', doctorId: '', nextAppointment: '' },
+  doctorForm: { name: '', email: '', specialty: '' },
+};
+
+function setState(updates) {
+  state = { ...state, ...updates };
+  render();
+}
+
+// ── FIREBASE HELPERS ───────────────────────────────────
+async function getUserProfile(uid) {
+  const snap = await getDoc(doc(db, 'users', uid));
+  return snap.exists() ? snap.data() : null;
+}
+
+async function loadPatients() {
+  let q;
+  if (state.userProfile?.role === 'doctor') {
+    q = query(collection(db, 'patients'), where('doctorId', '==', state.user.uid), orderBy('createdAt', 'desc'));
+  } else {
+    q = query(collection(db, 'patients'), orderBy('createdAt', 'desc'));
+  }
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function loadDoctors() {
+  const q = query(collection(db, 'users'), where('role', '==', 'doctor'));
+  const snap = await getDocs(q);
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
+
+async function refreshData() {
+  const [patients, doctors] = await Promise.all([loadPatients(), loadDoctors()]);
+  setState({ patients, doctors });
+}
+
+function showToast(msg) {
+  setState({ toast: msg });
+  setTimeout(() => setState({ toast: null }), 3000);
+}
+
+// ── AUTH ───────────────────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const profile = await getUserProfile(user.uid);
+    const [patients, doctors] = await Promise.all([
+      loadPatients().catch(() => []),
+      loadDoctors().catch(() => [])
+    ]);
+    setState({ user, userProfile: profile, loading: false, patients, doctors });
+  } else {
+    setState({ user: null, userProfile: null, loading: false, patients: [], doctors: [] });
+  }
+});
+
+async function handleLogin(email, password) {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    return e.message.replace('Firebase: ', '').replace(/ \(auth\/.*\)\.?/, '');
+  }
+  return null;
+}
+
+async function handleSignOut() {
+  await signOut(auth);
+}
+
+// ── ACTIONS ────────────────────────────────────────────
+async function addPatient(data) {
+  await addDoc(collection(db, 'patients'), {
+    ...data,
+    createdAt: serverTimestamp(),
+    appointmentKept: null,
+    sentiment: null,
+    queriesHandled: 0,
+    brief: null,
+  });
+  await refreshData();
+  showToast('Patient added successfully');
+}
+
+async function saveBrief(patientId, brief) {
+  await updateDoc(doc(db, 'patients', patientId), {
+    brief,
+    briefUpdatedAt: serverTimestamp(),
+  });
+  await refreshData();
+  showToast('Brief saved');
+}
+
+async function markAppointment(patientId, kept) {
+  await updateDoc(doc(db, 'patients', patientId), {
+    appointmentKept: kept,
+    lastAppointmentDate: serverTimestamp(),
+  });
+  await refreshData();
+  showToast(kept ? 'Marked as attended' : 'Marked as missed');
+}
+
+async function updateSentiment(patientId, sentiment) {
+  await updateDoc(doc(db, 'patients', patientId), { sentiment });
+  await refreshData();
+  showToast('Sentiment updated');
+}
+
+async function incrementQuery(patientId) {
+  const p = state.patients.find(p => p.id === patientId);
+  if (!p) return;
+  await updateDoc(doc(db, 'patients', patientId), { queriesHandled: (p.queriesHandled || 0) + 1 });
+  await refreshData();
+  showToast('Query logged');
+}
+
+async function createDoctorAccount(data) {
+  // Create user profile doc (doctor must be created via Firebase Auth separately)
+  // For pilot: store doctor info, link by email
+  await addDoc(collection(db, 'doctor_invites'), {
+    ...data,
+    createdAt: serverTimestamp(),
+    status: 'pending'
+  });
+  showToast('Doctor invite created. Ask them to register with this email.');
+}
+
+// ── ANALYTICS ─────────────────────────────────────────
+function computeAnalytics(patients) {
+  const total = patients.length;
+  const withAppointment = patients.filter(p => p.appointmentKept !== null);
+  const kept = patients.filter(p => p.appointmentKept === true).length;
+  const retention = withAppointment.length > 0 ? Math.round((kept / withAppointment.length) * 100) : null;
+  const totalQueries = patients.reduce((s, p) => s + (p.queriesHandled || 0), 0);
+  const positive = patients.filter(p => p.sentiment === 'positive').length;
+  const neutral = patients.filter(p => p.sentiment === 'neutral').length;
+  const concerned = patients.filter(p => p.sentiment === 'concerned').length;
+  return { total, retention, totalQueries, positive, neutral, concerned, withBrief: patients.filter(p => p.brief).length };
+}
+
+// ── RENDER HELPERS ─────────────────────────────────────
+function initials(name) {
+  return (name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+}
+
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+}
+
+// ── RENDER ─────────────────────────────────────────────
+function render() {
+  const root = document.getElementById('root');
+  if (state.loading) {
+    root.innerHTML = `<div class="loading"><div class="spinner"></div> Loading Presense…</div>`;
+    return;
+  }
+  if (!state.user || !state.userProfile) {
+    root.innerHTML = renderAuth();
+    attachAuthHandlers();
+    return;
+  }
+  root.innerHTML = renderApp();
+  attachAppHandlers();
+  if (state.toast) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.textContent = state.toast;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3100);
+  }
+}
+
+// ── AUTH SCREEN ────────────────────────────────────────
+function renderAuth() {
+  return `
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-mark">
+          <div class="logo-icon">
+            <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.8">
+              <circle cx="10" cy="7" r="3.5"/>
+              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
+              <path d="M14 3.5c1.2.6 2 1.9 2 3.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="logo-name">Presense</span>
+        </div>
+        <div class="auth-tagline">Integrated psychological care for your patients</div>
+      </div>
+      <div class="auth-title">Sign in to continue</div>
+      <div id="auth-error" style="display:none" class="auth-error"></div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="your@email.com" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" />
+      </div>
+      <button class="btn-primary" id="login-btn">Sign In</button>
+    </div>
+  </div>`;
+}
+
+function attachAuthHandlers() {
+  const btn = document.getElementById('login-btn');
+  const emailEl = document.getElementById('login-email');
+  const passEl = document.getElementById('login-password');
+  const errEl = document.getElementById('auth-error');
+
+  async function doLogin() {
+    const email = emailEl.value.trim();
+    const pass = passEl.value;
+    if (!email || !pass) return;
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    const err = await handleLogin(email, pass);
+    if (err) {
+      errEl.style.display = 'block';
+      errEl.textContent = 'Invalid email or password. Please try again.';
+      btn.disabled = false; btn.textContent = 'Sign In';
+    }
+  }
+
+  btn.addEventListener('click', doLogin);
+  passEl.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+}
+
+// ── APP SHELL ──────────────────────────────────────────
+function renderApp() {
+  const role = state.userProfile?.role;
+  const isDoctor = role === 'doctor';
+  const isCCL = role === 'ccl' || role === 'admin';
+
+  const navItems = isDoctor
+    ? [
+        { id: 'dashboard', icon: iconDashboard, label: 'Dashboard' },
+        { id: 'patients', icon: iconPatients, label: 'My Patients' },
+        { id: 'analytics', icon: iconAnalytics, label: 'Analytics' },
+      ]
+    : [
+        { id: 'dashboard', icon: iconDashboard, label: 'Dashboard' },
+        { id: 'patients', icon: iconPatients, label: 'Patients' },
+        { id: 'doctors', icon: iconDoctors, label: 'Doctors' },
+        { id: 'analytics', icon: iconAnalytics, label: 'Analytics' },
+        { id: 'team', icon: iconTeam, label: 'Team' },
+      ];
+
+  const name = state.userProfile?.name || state.user.email;
+  const email = state.user.email;
+
+  return `
+  <div class="app-shell">
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="logo-icon" style="width:30px;height:30px;">
+            <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.8" style="width:16px;height:16px;">
+              <circle cx="10" cy="7" r="3.5"/>
+              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
+            </svg>
+          </div>
+          <span class="sidebar-logo-name">Presense</span>
+        </div>
+        <span class="sidebar-role-badge ${isDoctor ? 'role-doctor' : 'role-ccl'}">${isDoctor ? 'Doctor' : 'CCL Team'}</span>
+      </div>
+      <div class="sidebar-nav">
+        ${navItems.map(n => `
+          <button class="nav-item ${state.page === n.id ? 'active' : ''}" data-page="${n.id}">
+            ${n.icon} ${n.label}
+          </button>
+        `).join('')}
+      </div>
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar">${initials(name)}</div>
+          <div class="user-info">
+            <div class="user-name">${name}</div>
+            <div class="user-email">${email}</div>
+          </div>
+        </div>
+        <button class="btn-signout" id="signout-btn">Sign out</button>
+      </div>
+    </nav>
+    <main class="main">
+      ${renderPage()}
+    </main>
+    ${state.modal ? renderModal() : ''}
+  </div>`;
+}
+
+// ── PAGES ──────────────────────────────────────────────
+function renderPage() {
+  switch (state.page) {
+    case 'dashboard': return renderDashboard();
+    case 'patients': return renderPatients();
+    case 'doctors': return renderDoctors();
+    case 'analytics': return renderAnalytics();
+    case 'team': return renderTeam();
+    default: return renderDashboard();
+  }
+}
+
+function renderDashboard() {
+  const role = state.userProfile?.role;
+  const isDoctor = role === 'doctor';
+  const stats = computeAnalytics(state.patients);
+  const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
+  const name = state.userProfile?.name || 'there';
+
+  const todayPatients = state.patients.filter(p => {
+    if (!p.nextAppointment) return false;
+    const d = new Date(p.nextAppointment);
+    const now = new Date();
+    return d.toDateString() === now.toDateString();
+  });
+
+  const recentPatients = state.patients.slice(0, 5);
+  const flagged = state.patients.filter(p => p.brief?.flagLevel === 'high');
+
+  return `
+  <div class="page-header">
+    <div class="page-title">Good morning${isDoctor ? ', Dr.' : ''} ${name.split(' ')[0]} 👋</div>
+    <div class="page-subtitle">${today}</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total Patients</div>
+      <div class="stat-value">${stats.total}</div>
+      <div class="stat-sub">under care</div>
+    </div>
+    <div class="stat-card stat-teal">
+      <div class="stat-label">Retention Rate</div>
+      <div class="stat-value">${stats.retention !== null ? stats.retention + '%' : '—'}</div>
+      <div class="stat-sub">${stats.retention !== null ? 'of appointments kept' : 'no data yet'}</div>
+    </div>
+    <div class="stat-card stat-amber">
+      <div class="stat-label">Queries Handled</div>
+      <div class="stat-value">${stats.totalQueries}</div>
+      <div class="stat-sub">by CCL team</div>
+    </div>
+  </div>
+
+  ${flagged.length > 0 ? `
+  <div class="section-gap">
+    <div class="card" style="border-color: #fde68a;">
+      <div class="card-header" style="background: var(--amber-light);">
+        <div class="card-title" style="color: #92400e;">⚠️ Attention Required (${flagged.length})</div>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        ${flagged.map(p => `
+          <div class="patient-row" data-action="view-patient" data-id="${p.id}">
+            <div class="patient-avatar">${initials(p.name)}</div>
+            <div class="patient-info">
+              <div class="patient-name">${p.name}</div>
+              <div class="patient-meta">${p.brief?.flag || 'Flagged for attention'}</div>
+            </div>
+            <span class="badge badge-amber">Review brief</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>
+  ` : ''}
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Recent Patients</div>
+      <button class="btn-outline btn-sm" data-page="patients">View all</button>
+    </div>
+    <div style="padding: 0;">
+      ${recentPatients.length === 0
+        ? `<div class="empty-state"><div class="empty-icon">🏥</div><div class="empty-title">No patients yet</div><div class="empty-sub">${isDoctor ? 'Patients will appear here once CCL adds them.' : 'Add your first patient to get started.'}</div></div>`
+        : recentPatients.map(p => renderPatientRow(p, true)).join('')
+      }
+    </div>
+  </div>`;
+}
+
+function renderPatients() {
+  const isDoctor = state.userProfile?.role === 'doctor';
+  return `
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+    <div>
+      <div class="page-title">Patients</div>
+      <div class="page-subtitle">${state.patients.length} patient${state.patients.length !== 1 ? 's' : ''} under care</div>
+    </div>
+    ${!isDoctor ? `<button class="btn-teal" data-action="add-patient">+ Add Patient</button>` : ''}
+  </div>
+  <div class="card" style="overflow:visible;">
+    <div style="padding: 0;">
+      ${state.patients.length === 0
+        ? `<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">No patients yet</div><div class="empty-sub">${isDoctor ? 'Patients will appear once CCL adds them.' : 'Add your first patient.'}</div></div>`
+        : state.patients.map(p => renderPatientRow(p, false)).join('')
+      }
+    </div>
+  </div>`;
+}
+
+function renderPatientRow(p, compact) {
+  const isDoctor = state.userProfile?.role === 'doctor';
+  const hasBrief = !!p.brief;
+  const flagLevel = p.brief?.flagLevel || 'none';
+
+  let statusBadge = '';
+  if (flagLevel === 'high') statusBadge = `<span class="badge badge-amber">⚠ Flag</span>`;
+  else if (hasBrief) statusBadge = `<span class="badge badge-green">Brief ready</span>`;
+  else statusBadge = `<span class="badge badge-gray">No brief</span>`;
+
+  let sentimentBadge = '';
+  if (p.sentiment === 'positive') sentimentBadge = `<span class="badge badge-green">😊 Positive</span>`;
+  else if (p.sentiment === 'concerned') sentimentBadge = `<span class="badge badge-amber">😟 Concerned</span>`;
+  else if (p.sentiment === 'neutral') sentimentBadge = `<span class="badge badge-gray">😐 Neutral</span>`;
+
+  return `
+  <div class="patient-row" data-action="view-patient" data-id="${p.id}">
+    <div class="patient-avatar">${initials(p.name)}</div>
+    <div class="patient-info">
+      <div class="patient-name">${p.name}</div>
+      <div class="patient-meta">${p.condition || 'No condition noted'} · Next: ${p.nextAppointment ? new Date(p.nextAppointment).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}</div>
+    </div>
+    <div class="patient-actions">
+      ${sentimentBadge}
+      ${statusBadge}
+    </div>
+  </div>`;
+}
+
+function renderDoctors() {
+  return `
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+    <div>
+      <div class="page-title">Doctors</div>
+      <div class="page-subtitle">Partner doctors in the Presense network</div>
+    </div>
+    <button class="btn-teal" data-action="add-doctor">+ Add Doctor</button>
+  </div>
+  <div class="card">
+    <div style="padding:0;">
+      ${state.doctors.length === 0
+        ? `<div class="empty-state"><div class="empty-icon">🩺</div><div class="empty-title">No doctors yet</div><div class="empty-sub">Add your first partner doctor.</div></div>`
+        : state.doctors.map(d => `
+          <div class="patient-row">
+            <div class="patient-avatar" style="background: var(--amber-light); color: var(--amber);">${initials(d.name)}</div>
+            <div class="patient-info">
+              <div class="patient-name">${d.name}</div>
+              <div class="patient-meta">${d.specialty || '—'} · ${d.email}</div>
+            </div>
+            <span class="badge badge-teal">${state.patients.filter(p => p.doctorId === d.id).length} patients</span>
+          </div>
+        `).join('')
+      }
+    </div>
+  </div>`;
+}
+
+function renderAnalytics() {
+  const patients = state.patients;
+  const stats = computeAnalytics(patients);
+  const sentimentTotal = stats.positive + stats.neutral + stats.concerned;
+
+  const doctorBreakdown = state.doctors.map(d => {
+    const dp = patients.filter(p => p.doctorId === d.id);
+    const ds = computeAnalytics(dp);
+    return { ...d, stats: ds, patientCount: dp.length };
+  }).filter(d => d.patientCount > 0);
+
+  return `
+  <div class="page-header">
+    <div class="page-title">Analytics</div>
+    <div class="page-subtitle">Monthly performance overview · ${new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</div>
+  </div>
+
+  <div class="analytics-grid">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Patient Retention</div></div>
+      <div class="card-body">
+        <div style="font-family:'Fraunces',serif;font-size:48px;font-weight:400;color:var(--teal);line-height:1;">
+          ${stats.retention !== null ? stats.retention + '%' : '—'}
+        </div>
+        <div style="font-size:13px;color:var(--ink-muted);margin-top:4px;">of scheduled appointments kept</div>
+        <div class="progress-bar-wrap" style="margin-top:16px;">
+          <div class="progress-bar-fill" style="width:${stats.retention || 0}%"></div>
+        </div>
+        <div style="font-size:12px;color:var(--ink-muted);margin-top:8px;">${stats.total} total patients tracked</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">Queries Handled by CCL</div></div>
+      <div class="card-body">
+        <div style="font-family:'Fraunces',serif;font-size:48px;font-weight:400;color:var(--amber);line-height:1;">
+          ${stats.totalQueries}
+        </div>
+        <div style="font-size:13px;color:var(--ink-muted);margin-top:4px;">between-session queries managed</div>
+        <div style="font-size:12px;color:var(--ink-muted);margin-top:16px;">Time saved for doctors: ~${Math.round(stats.totalQueries * 8)} mins</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card section-gap">
+    <div class="card-header"><div class="card-title">Patient Sentiment Trend</div></div>
+    <div class="card-body">
+      ${sentimentTotal === 0
+        ? `<div class="brief-empty">No sentiment data yet. Update sentiment after each session.</div>`
+        : `
+        <div class="sentiment-row">
+          <div class="sentiment-label">😊 Positive</div>
+          <div class="sentiment-bar"><div class="sentiment-fill-positive" style="width:${sentimentTotal > 0 ? Math.round(stats.positive/sentimentTotal*100) : 0}%"></div></div>
+          <div class="sentiment-count">${stats.positive}</div>
+        </div>
+        <div class="sentiment-row">
+          <div class="sentiment-label">😐 Neutral</div>
+          <div class="sentiment-bar"><div class="sentiment-fill-neutral" style="width:${sentimentTotal > 0 ? Math.round(stats.neutral/sentimentTotal*100) : 0}%"></div></div>
+          <div class="sentiment-count">${stats.neutral}</div>
+        </div>
+        <div class="sentiment-row">
+          <div class="sentiment-label">😟 Concerned</div>
+          <div class="sentiment-bar"><div class="sentiment-fill-concerned" style="width:${sentimentTotal > 0 ? Math.round(stats.concerned/sentimentTotal*100) : 0}%"></div></div>
+          <div class="sentiment-count">${stats.concerned}</div>
+        </div>
+      `}
+    </div>
+  </div>
+
+  ${doctorBreakdown.length > 0 ? `
+  <div class="card">
+    <div class="card-header"><div class="card-title">Per Doctor Breakdown</div></div>
+    <div style="padding:0;">
+      ${doctorBreakdown.map(d => `
+        <div class="patient-row" style="cursor:default;">
+          <div class="patient-avatar" style="background:var(--amber-light);color:var(--amber);">${initials(d.name)}</div>
+          <div class="patient-info">
+            <div class="patient-name">${d.name}</div>
+            <div class="patient-meta">${d.specialty || ''} · ${d.patientCount} patients</div>
+          </div>
+          <div class="patient-actions">
+            <span class="badge badge-teal">Retention: ${d.stats.retention !== null ? d.stats.retention + '%' : '—'}</span>
+            <span class="badge badge-gray">${d.stats.totalQueries} queries</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+  ` : ''}`;
+}
+
+function renderTeam() {
+  return `
+  <div class="page-header">
+    <div class="page-title">Team</div>
+    <div class="page-subtitle">Manage CCL team access</div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">Create Team Member Account</div></div>
+    <div class="card-body">
+      <p style="font-size:14px;color:var(--ink-soft);margin-bottom:20px;">
+        To add a team member, create their account in Firebase Authentication console, then add their user document in Firestore <code>users</code> collection with fields: <code>name</code>, <code>email</code>, <code>role: "ccl"</code>.
+      </p>
+      <div style="background:var(--surface);border-radius:10px;padding:16px;font-size:13px;color:var(--ink-soft);font-family:monospace;line-height:1.8;">
+        users / {uid} / {<br>
+        &nbsp;&nbsp;name: "Team Member Name",<br>
+        &nbsp;&nbsp;email: "member@ccllife.com",<br>
+        &nbsp;&nbsp;role: "ccl"<br>
+        }
+      </div>
+      <div class="divider"></div>
+      <div style="background:var(--surface);border-radius:10px;padding:16px;font-size:13px;color:var(--ink-soft);font-family:monospace;line-height:1.8;">
+        <strong>For doctors:</strong><br>
+        users / {uid} / {<br>
+        &nbsp;&nbsp;name: "Dr. Name",<br>
+        &nbsp;&nbsp;email: "doctor@clinic.com",<br>
+        &nbsp;&nbsp;role: "doctor",<br>
+        &nbsp;&nbsp;specialty: "Physician"<br>
+        }
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── MODALS ─────────────────────────────────────────────
+function renderModal() {
+  const m = state.modal;
+
+  if (m.type === 'view-patient') {
+    const p = m.patient;
+    const isDoctor = state.userProfile?.role === 'doctor';
+    const hasBrief = !!p.brief;
+
+    return `
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="patient-avatar" style="width:42px;height:42px;font-size:16px;">${initials(p.name)}</div>
+            <div>
+              <div class="modal-title">${p.name}</div>
+              <div style="font-size:13px;color:var(--ink-muted);">${p.condition || 'No condition noted'} · Age ${p.age || '—'}</div>
+            </div>
+          </div>
+          <button class="modal-close" data-action="close-modal">×</button>
+        </div>
+        <div class="modal-body">
+          ${isDoctor ? renderDoctorBriefView(p) : renderCCLPatientView(p)}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (m.type === 'add-patient') {
+    const doctors = state.doctors;
+    return `
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">Add New Patient</div>
+          <button class="modal-close" data-action="close-modal">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Patient Name *</label>
+              <input class="form-input" id="pf-name" placeholder="Full name" value="${state.patientForm.name}" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Age</label>
+              <input class="form-input" id="pf-age" placeholder="e.g. 34" type="number" value="${state.patientForm.age}" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Condition / Presenting Issue</label>
+            <input class="form-input" id="pf-condition" placeholder="e.g. Anxiety, PCOS, Hypertension" value="${state.patientForm.condition}" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Assigned Doctor *</label>
+            <select class="form-select" id="pf-doctor">
+              <option value="">Select doctor…</option>
+              ${doctors.map(d => `<option value="${d.id}" ${state.patientForm.doctorId === d.id ? 'selected' : ''}>${d.name} (${d.specialty || ''})</option>`).join('')}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Next Appointment Date</label>
+            <input class="form-input" id="pf-date" type="date" value="${state.patientForm.nextAppointment}" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" data-action="close-modal">Cancel</button>
+          <button class="btn-teal" id="save-patient-btn">Add Patient</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (m.type === 'add-doctor') {
+    return `
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <div class="modal-title">Add Doctor</div>
+          <button class="modal-close" data-action="close-modal">×</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:13px;color:var(--ink-muted);margin-bottom:20px;">This will create an invite. Ask the doctor to sign up with this email — then update their Firestore user document with role: "doctor".</p>
+          <div class="form-group">
+            <label class="form-label">Doctor Name</label>
+            <input class="form-input" id="df-name" placeholder="Dr. Full Name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" id="df-email" type="email" placeholder="doctor@clinic.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Specialty</label>
+            <input class="form-input" id="df-specialty" placeholder="e.g. Physician, Gynaecologist" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-outline" data-action="close-modal">Cancel</button>
+          <button class="btn-teal" id="save-doctor-btn">Create Invite</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  return '';
+}
+
+function renderDoctorBriefView(p) {
+  const b = p.brief;
+  if (!b) return `
+    <div class="empty-state">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">Brief not ready yet</div>
+      <div class="empty-sub">CCL team will update this before your next session.</div>
+    </div>`;
+
+  return `
+  <div class="brief-section">
+    <div class="brief-section-label">What's on their mind</div>
+    <div class="brief-content">${b.mindState || '—'}</div>
+  </div>
+  <div class="brief-section">
+    <div class="brief-section-label">Suggested framing for this visit</div>
+    <div class="brief-content">${b.suggestedFraming || '—'}</div>
+  </div>
+  ${b.flag ? `
+  <div class="brief-section">
+    <div class="brief-section-label">⚠️ Flag from CCL</div>
+    <div class="brief-content ${b.flagLevel === 'high' ? 'red-flag' : 'flag'}">${b.flag}</div>
+  </div>
+  ` : ''}
+  <div style="font-size:12px;color:var(--ink-muted);margin-top:16px;">
+    Last updated: ${p.briefUpdatedAt ? formatDate(p.briefUpdatedAt) : '—'}
+  </div>`;
+}
+
+function renderCCLPatientView(p) {
+  const b = p.brief || {};
+  return `
+  <div class="tabs">
+    <button class="tab active" id="tab-brief">Pre-Visit Brief</button>
+    <button class="tab" id="tab-status">Session Status</button>
+  </div>
+  <div id="panel-brief">
+    <div class="form-group">
+      <label class="form-label">What's on their mind</label>
+      <textarea class="form-textarea" id="bf-mind" placeholder="Psychological state, key concerns, what the patient has been expressing…">${b.mindState || ''}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Suggested framing for doctor</label>
+      <textarea class="form-textarea" id="bf-framing" placeholder="How the doctor should approach this visit. Keep it practical and clear…">${b.suggestedFraming || ''}</textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Flag (leave blank if none)</label>
+      <input class="form-input" id="bf-flag" placeholder="e.g. Patient anxious about new medication, needs reassurance" value="${b.flag || ''}" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Flag Level</label>
+      <select class="form-select" id="bf-flag-level">
+        <option value="none" ${(b.flagLevel||'none') === 'none' ? 'selected' : ''}>No flag</option>
+        <option value="low" ${b.flagLevel === 'low' ? 'selected' : ''}>Low — FYI</option>
+        <option value="high" ${b.flagLevel === 'high' ? 'selected' : ''}>High — Needs attention</option>
+      </select>
+    </div>
+    <button class="btn-teal" id="save-brief-btn" data-patient-id="${p.id}">Save Brief</button>
+  </div>
+  <div id="panel-status" style="display:none;">
+    <div class="form-group">
+      <label class="form-label">Appointment Status</label>
+      <div style="display:flex;gap:10px;margin-top:4px;">
+        <button class="btn-teal ${p.appointmentKept === true ? '' : 'btn-outline'}" data-action="mark-kept" data-id="${p.id}">✓ Attended</button>
+        <button class="btn-outline ${p.appointmentKept === false ? '' : ''}" data-action="mark-missed" data-id="${p.id}" style="${p.appointmentKept === false ? 'border-color:var(--red);color:var(--red)' : ''}">✗ Missed</button>
+      </div>
+      ${p.appointmentKept !== null ? `<div style="font-size:12px;color:var(--ink-muted);margin-top:8px;">Last recorded: ${p.appointmentKept ? 'Attended ✓' : 'Missed ✗'}</div>` : ''}
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label class="form-label">Patient Sentiment</label>
+      <select class="form-select" id="sentiment-select">
+        <option value="">Select…</option>
+        <option value="positive" ${p.sentiment === 'positive' ? 'selected' : ''}>😊 Positive</option>
+        <option value="neutral" ${p.sentiment === 'neutral' ? 'selected' : ''}>😐 Neutral</option>
+        <option value="concerned" ${p.sentiment === 'concerned' ? 'selected' : ''}>😟 Concerned</option>
+      </select>
+      <button class="btn-teal btn-sm" style="margin-top:8px;" data-action="save-sentiment" data-id="${p.id}">Update</button>
+    </div>
+    <div class="divider"></div>
+    <div class="form-group">
+      <label class="form-label">Log Query Handled</label>
+      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:10px;">Total queries handled for this patient: <strong>${p.queriesHandled || 0}</strong></div>
+      <button class="btn-outline btn-sm" data-action="log-query" data-id="${p.id}">+ Log 1 Query</button>
+    </div>
+  </div>`;
+}
+
+// ── EVENT HANDLERS ─────────────────────────────────────
+function attachAppHandlers() {
+  // Nav
+  document.querySelectorAll('[data-page]').forEach(el => {
+    el.addEventListener('click', () => setState({ page: el.dataset.page }));
+  });
+
+  // Sign out
+  document.getElementById('signout-btn')?.addEventListener('click', handleSignOut);
+
+  // Modal triggers
+  document.querySelectorAll('[data-action]').forEach(el => {
+    el.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const action = el.dataset.action;
+
+      if (action === 'view-patient') {
+        const patient = state.patients.find(p => p.id === el.dataset.id);
+        if (patient) setState({ modal: { type: 'view-patient', patient } });
+      }
+      if (action === 'add-patient') setState({ modal: { type: 'add-patient' } });
+      if (action === 'add-doctor') setState({ modal: { type: 'add-doctor' } });
+      if (action === 'close-modal') setState({ modal: null });
+      if (action === 'mark-kept') { await markAppointment(el.dataset.id, true); setState({ modal: null }); }
+      if (action === 'mark-missed') { await markAppointment(el.dataset.id, false); setState({ modal: null }); }
+      if (action === 'log-query') { await incrementQuery(el.dataset.id); }
+      if (action === 'save-sentiment') {
+        const val = document.getElementById('sentiment-select')?.value;
+        if (val) { await updateSentiment(el.dataset.id, val); setState({ modal: null }); }
+      }
+    });
+  });
+
+  // Modal overlay click to close
+  document.getElementById('modal-overlay')?.addEventListener('click', (e) => {
+    if (e.target.id === 'modal-overlay') setState({ modal: null });
+  });
+
+  // Tabs in modal
+  document.getElementById('tab-brief')?.addEventListener('click', () => {
+    document.getElementById('tab-brief').classList.add('active');
+    document.getElementById('tab-status').classList.remove('active');
+    document.getElementById('panel-brief').style.display = '';
+    document.getElementById('panel-status').style.display = 'none';
+  });
+  document.getElementById('tab-status')?.addEventListener('click', () => {
+    document.getElementById('tab-status').classList.add('active');
+    document.getElementById('tab-brief').classList.remove('active');
+    document.getElementById('panel-status').style.display = '';
+    document.getElementById('panel-brief').style.display = 'none';
+  });
+
+  // Save brief
+  document.getElementById('save-brief-btn')?.addEventListener('click', async (e) => {
+    const patientId = e.target.dataset.patientId;
+    const brief = {
+      mindState: document.getElementById('bf-mind').value,
+      suggestedFraming: document.getElementById('bf-framing').value,
+      flag: document.getElementById('bf-flag').value,
+      flagLevel: document.getElementById('bf-flag-level').value,
+    };
+    await saveBrief(patientId, brief);
+    setState({ modal: null });
+  });
+
+  // Save patient
+  document.getElementById('save-patient-btn')?.addEventListener('click', async () => {
+    const name = document.getElementById('pf-name').value.trim();
+    const doctorId = document.getElementById('pf-doctor').value;
+    if (!name || !doctorId) { alert('Patient name and doctor are required.'); return; }
+    await addPatient({
+      name,
+      age: document.getElementById('pf-age').value,
+      condition: document.getElementById('pf-condition').value,
+      doctorId,
+      nextAppointment: document.getElementById('pf-date').value,
+    });
+    setState({ modal: null, patientForm: { name: '', age: '', condition: '', doctorId: '', nextAppointment: '' } });
+  });
+
+  // Save doctor
+  document.getElementById('save-doctor-btn')?.addEventListener('click', async () => {
+    const name = document.getElementById('df-name').value.trim();
+    const email = document.getElementById('df-email').value.trim();
+    if (!name || !email) { alert('Name and email are required.'); return; }
+    await createDoctorAccount({
+      name,
+      email,
+      specialty: document.getElementById('df-specialty').value,
+    });
+    setState({ modal: null });
+  });
+}
+
+// ── ICONS ──────────────────────────────────────────────
+const iconDashboard = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>`;
+const iconPatients = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>`;
+const iconDoctors = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4m-2-2h4"/><circle cx="8" cy="10" r="4"/></svg>`;
+const iconAnalytics = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>`;
+const iconTeam = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><path d="M1 14c0-2.2 1.8-4 4-4"/><path d="M10 14c0-2.2 1.8-4 4-4"/><path d="M7 14c0-2.2 1.8-4 4-4s4 1.8 4 4"/></svg>`;
+
+// Initial render
+render();
+</script>
+</body>
+</html>
