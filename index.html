@@ -602,17 +602,22 @@ function showToast(msg) {
 // ── AUTH ───────────────────────────────────────────────
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const profile = await getUserProfile(user.uid);
-    const [patients, doctors] = await Promise.all([
-      loadPatients().catch(() => []),
-      loadDoctors().catch(() => [])
-    ]);
-    setState({ user, userProfile: profile, loading: false, patients, doctors });
+    try {
+      const profile = await getUserProfile(user.uid);
+      const [patients, doctors] = await Promise.all([
+        loadPatients().catch(() => []),
+        loadDoctors().catch(() => [])
+      ]);
+      setState({ user, userProfile: profile, loading: false, patients, doctors });
+    } catch(e) {
+      console.error('Load error:', e);
+      const profile = { role: 'ccl', name: user.email };
+      setState({ user, userProfile: profile, loading: false, patients: [], doctors: [] });
+    }
   } else {
     setState({ user: null, userProfile: null, loading: false, patients: [], doctors: [] });
   }
 });
-
 async function handleLogin(email, password) {
   try {
     await signInWithEmailAndPassword(auth, email, password);
