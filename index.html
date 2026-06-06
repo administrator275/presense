@@ -618,6 +618,7 @@ onAuthStateChanged(auth, async (user) => {
     setState({ user: null, userProfile: null, loading: false, patients: [], doctors: [] });
   }
 });
+
 async function handleLogin(email, password) {
   try {
     await signInWithEmailAndPassword(auth, email, password);
@@ -635,6 +636,7 @@ async function handleSignOut() {
 async function addPatient(data) {
   await addDoc(collection(db, 'patients'), {
     ...data,
+    createdBy: state.user.uid,
     createdAt: serverTimestamp(),
     appointmentKept: null,
     sentiment: null,
