@@ -1,1448 +1,1142 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Presense</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Presense — Behavioral Medicine Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0d1117;--ink-soft:#3d4452;--ink-muted:#8b90a0;
+  --surface:#f5f4f0;--surface-warm:#eeece6;--white:#ffffff;
+  --teal:#1a6b5c;--teal-light:#d4ede8;--teal-mid:#22897a;
+  --amber:#b45309;--amber-light:#fef3c7;
+  --red:#c0392b;--red-light:#fee2e2;
+  --violet:#5b21b6;--violet-light:#ede9fe;
+  --green:#065f46;--green-light:#d1fae5;
+  --border:#e2dfd8;--border-light:#f0ede8;
+  --shadow:0 2px 8px rgba(13,17,23,0.07);
+  --shadow-lg:0 8px 32px rgba(13,17,23,0.12);
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--surface);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.6}
 
-  :root {
-    --ink: #0f1117;
-    --ink-soft: #3d4152;
-    --ink-muted: #8b90a0;
-    --surface: #f7f6f2;
-    --surface-warm: #f0ede6;
-    --white: #ffffff;
-    --teal: #1a7f6e;
-    --teal-light: #d4ede9;
-    --teal-mid: #2aa68f;
-    --amber: #d97706;
-    --amber-light: #fef3c7;
-    --red: #dc2626;
-    --red-light: #fee2e2;
-    --border: #e2dfd8;
-    --shadow: 0 2px 12px rgba(15,17,23,0.08);
-    --shadow-lg: 0 8px 32px rgba(15,17,23,0.12);
-  }
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--ink);position:relative;overflow:hidden}
+.auth-wrap::before{content:'';position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(26,107,92,0.3) 0%,transparent 70%);top:-100px;right:-80px}
+.auth-card{background:var(--white);border-radius:20px;padding:44px 40px;width:400px;position:relative;z-index:1;box-shadow:0 24px 80px rgba(0,0,0,0.4)}
+.auth-logo-name{font-family:'Lora',serif;font-size:22px;color:var(--ink);font-weight:400;letter-spacing:-0.3px}
+.auth-tagline{font-size:12px;color:var(--ink-muted);margin-bottom:28px;margin-top:4px}
+.auth-title{font-family:'Lora',serif;font-size:20px;color:var(--ink);font-weight:400;margin-bottom:22px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px}
+.field input{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);background:var(--surface);transition:border-color 0.2s;outline:none}
+.field input:focus{border-color:var(--teal);background:var(--white)}
+.btn-primary{width:100%;padding:12px;background:var(--teal);color:var(--white);border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:14px;font-weight:500;cursor:pointer;margin-top:6px;transition:background 0.2s}
+.btn-primary:hover{background:var(--teal-mid)}
+.btn-primary:disabled{background:var(--ink-muted);cursor:not-allowed}
+.auth-error{background:var(--red-light);color:var(--red);border-radius:7px;padding:9px 13px;font-size:12px;margin-bottom:14px}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--surface);
-    color: var(--ink);
-    min-height: 100vh;
-    font-size: 15px;
-    line-height: 1.6;
-  }
+/* SHELL */
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:232px;background:var(--ink);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+.sidebar-header{padding:22px 18px 18px;border-bottom:1px solid rgba(255,255,255,0.07)}
+.sidebar-logo{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+.logo-mark{width:30px;height:30px;background:var(--teal);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-name{font-family:'Lora',serif;font-size:18px;color:var(--white);font-weight:400;letter-spacing:-0.2px}
+.logo-sub{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:0.3px}
+.role-pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:0.4px;margin-top:6px}
+.role-ccl{background:var(--teal-light);color:var(--teal)}
+.role-doctor{background:var(--amber-light);color:var(--amber)}
+.sidebar-nav{flex:1;padding:14px 10px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;border:none;background:none;width:100%;text-align:left;transition:all 0.15s;margin-bottom:1px;font-family:'Inter',sans-serif;font-weight:400}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.8)}
+.nav-item.active{background:var(--teal);color:var(--white);font-weight:500}
+.sidebar-footer{padding:14px 10px;border-top:1px solid rgba(255,255,255,0.07)}
+.user-row{padding:8px 11px;margin-bottom:3px}
+.user-name{font-size:13px;color:rgba(255,255,255,0.8);font-weight:500}
+.user-email{font-size:11px;color:rgba(255,255,255,0.35)}
+.btn-signout{width:100%;padding:8px 11px;background:rgba(255,255,255,0.05);border:none;border-radius:7px;color:rgba(255,255,255,0.45);font-size:12px;cursor:pointer;text-align:left;font-family:'Inter',sans-serif;transition:all 0.15s}
+.btn-signout:hover{background:rgba(255,255,255,0.09);color:rgba(255,255,255,0.7)}
 
-  /* AUTH SCREEN */
-  .auth-wrap {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--ink);
-    position: relative;
-    overflow: hidden;
-  }
-  .auth-wrap::before {
-    content: '';
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(26,127,110,0.25) 0%, transparent 70%);
-    top: -100px; right: -100px;
-  }
-  .auth-wrap::after {
-    content: '';
-    position: absolute;
-    width: 400px; height: 400px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(42,166,143,0.15) 0%, transparent 70%);
-    bottom: -80px; left: -80px;
-  }
-  .auth-card {
-    background: var(--white);
-    border-radius: 20px;
-    padding: 48px 44px;
-    width: 420px;
-    position: relative;
-    z-index: 1;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.4);
-  }
-  .auth-logo {
-    margin-bottom: 32px;
-  }
-  .auth-logo-mark {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-  }
-  .logo-icon {
-    width: 36px; height: 36px;
-    background: var(--teal);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .logo-icon svg { width: 20px; height: 20px; }
-  .logo-name {
-    font-family: 'Fraunces', serif;
-    font-size: 24px;
-    font-weight: 400;
-    color: var(--ink);
-    letter-spacing: -0.5px;
-  }
-  .auth-tagline {
-    font-size: 13px;
-    color: var(--ink-muted);
-    font-weight: 300;
-  }
-  .auth-title {
-    font-family: 'Fraunces', serif;
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 24px;
-  }
-  .field { margin-bottom: 16px; }
-  .field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--ink-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 6px;
-  }
-  .field input {
-    width: 100%;
-    padding: 11px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--surface);
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  .field input:focus { border-color: var(--teal); background: var(--white); }
-  .btn-primary {
-    width: 100%;
-    padding: 13px;
-    background: var(--teal);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: background 0.2s, transform 0.1s;
-  }
-  .btn-primary:hover { background: #166b5c; }
-  .btn-primary:active { transform: scale(0.99); }
-  .btn-primary:disabled { background: var(--ink-muted); cursor: not-allowed; }
-  .auth-error {
-    background: var(--red-light);
-    color: var(--red);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    margin-bottom: 16px;
-  }
+/* MAIN */
+.main{margin-left:232px;padding:32px 36px;flex:1}
+.page-header{margin-bottom:26px}
+.page-title{font-family:'Lora',serif;font-size:26px;font-weight:400;color:var(--ink);letter-spacing:-0.4px;margin-bottom:3px}
+.page-sub{font-size:13px;color:var(--ink-muted)}
+.page-header-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px}
 
-  /* APP SHELL */
-  .app-shell { display: flex; min-height: 100vh; }
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.stat-card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:18px 20px;border-left-width:3px}
+.stat-label{font-size:10px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:7px}
+.stat-val{font-family:'Lora',serif;font-size:34px;font-weight:400;line-height:1;margin-bottom:3px}
+.stat-sub{font-size:11px;color:var(--ink-muted)}
 
-  /* SIDEBAR */
-  .sidebar {
-    width: 240px;
-    background: var(--ink);
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    flex-shrink: 0;
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    z-index: 100;
-  }
-  .sidebar-header {
-    padding: 24px 20px 20px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .sidebar-logo {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 4px;
-  }
-  .sidebar-logo-name {
-    font-family: 'Fraunces', serif;
-    font-size: 20px;
-    color: var(--white);
-    font-weight: 400;
-    letter-spacing: -0.3px;
-  }
-  .sidebar-role-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .role-doctor { background: var(--teal-light); color: var(--teal); }
-  .role-ccl { background: var(--amber-light); color: var(--amber); }
+/* CARD */
+.card{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:600;color:var(--ink)}
+.card-body{padding:20px}
 
-  .sidebar-nav { flex: 1; padding: 16px 12px; }
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    color: rgba(255,255,255,0.55);
-    font-size: 14px;
-    font-weight: 400;
-    cursor: pointer;
-    transition: all 0.15s;
-    margin-bottom: 2px;
-    border: none;
-    background: none;
-    width: 100%;
-    text-align: left;
-  }
-  .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
-  .nav-item.active { background: var(--teal); color: var(--white); }
-  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+/* CASE ROW */
+.case-row{padding:14px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background 0.1s;border-bottom:1px solid var(--border-light)}
+.case-row:last-child{border-bottom:none}
+.case-row:hover{background:var(--surface)}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--white);flex-shrink:0}
+.case-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.case-meta{font-size:11px;color:var(--ink-muted)}
 
-  .sidebar-footer {
-    padding: 16px 12px;
-    border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .sidebar-user {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 12px;
-    margin-bottom: 4px;
-  }
-  .user-avatar {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    background: var(--teal);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--white);
-    flex-shrink: 0;
-  }
-  .user-info { flex: 1; min-width: 0; }
-  .user-name { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .user-email { font-size: 11px; color: rgba(255,255,255,0.4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .btn-signout {
-    width: 100%;
-    padding: 8px 12px;
-    background: rgba(255,255,255,0.06);
-    border: none;
-    border-radius: 8px;
-    color: rgba(255,255,255,0.5);
-    font-size: 13px;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.15s;
-  }
-  .btn-signout:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;white-space:nowrap}
 
-  /* MAIN CONTENT */
-  .main { margin-left: 240px; padding: 32px 36px; flex: 1; }
+/* BUTTONS */
+.btn{padding:8px 16px;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s}
+.btn-teal{background:var(--teal);color:var(--white)}
+.btn-teal:hover{background:var(--teal-mid)}
+.btn-teal:disabled{background:var(--ink-muted);cursor:not-allowed}
+.btn-outline{background:transparent;color:var(--ink-soft);border:1.5px solid var(--border)}
+.btn-outline:hover{border-color:var(--ink-muted);color:var(--ink)}
+.btn-ghost{background:var(--surface);color:var(--ink-soft)}
+.btn-ghost:hover{background:var(--surface-warm)}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:7px}
+.btn-violet{background:var(--violet);color:var(--white)}
+.btn-violet:hover{background:#4c1d95}
 
-  .page-header { margin-bottom: 28px; }
-  .page-title {
-    font-family: 'Fraunces', serif;
-    font-size: 28px;
-    font-weight: 400;
-    color: var(--ink);
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
-  }
-  .page-subtitle { font-size: 14px; color: var(--ink-muted); }
+/* FORMS */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:10px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
+.form-input,.form-select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);background:var(--white);outline:none;transition:border-color 0.2s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--teal)}
+.form-textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);background:var(--white);resize:vertical;min-height:80px;outline:none;transition:border-color 0.2s}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 
-  /* CARDS */
-  .card {
-    background: var(--white);
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .card-title { font-size: 15px; font-weight: 600; color: var(--ink); }
-  .card-body { padding: 22px; }
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(13,17,23,0.55);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal{background:var(--white);border-radius:16px;width:100%;max-width:640px;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+.modal-title{font-family:'Lora',serif;font-size:18px;font-weight:400;color:var(--ink)}
+.modal-close{width:28px;height:28px;border-radius:50%;border:none;background:var(--surface);cursor:pointer;font-size:16px;color:var(--ink-muted);display:flex;align-items:center;justify-content:center;transition:background 0.15s}
+.modal-close:hover{background:var(--border)}
+.modal-body{padding:20px 24px 24px}
+.modal-footer{padding:14px 24px 20px;display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--border-light)}
 
-  /* STATS ROW */
-  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-  .stat-card {
-    background: var(--white);
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    padding: 20px 22px;
-  }
-  .stat-label { font-size: 12px; font-weight: 500; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .stat-value { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 400; color: var(--ink); line-height: 1; margin-bottom: 4px; }
-  .stat-sub { font-size: 12px; color: var(--ink-muted); }
-  .stat-teal .stat-value { color: var(--teal); }
-  .stat-amber .stat-value { color: var(--amber); }
+/* TABS */
+.tabs{display:flex;gap:3px;background:var(--surface-warm);border-radius:9px;padding:3px;margin-bottom:20px}
+.tab{flex:1;padding:7px 10px;border:none;border-radius:7px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;cursor:pointer;color:var(--ink-muted);background:transparent;transition:all 0.15s}
+.tab.active{background:var(--white);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,0.07)}
 
-  /* PATIENT LIST */
-  .patient-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
-  .patient-row {
-    background: var(--white);
-    padding: 16px 22px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .patient-row:hover { background: var(--surface); }
-  .patient-row:first-child { border-radius: 14px 14px 0 0; }
-  .patient-row:last-child { border-radius: 0 0 14px 14px; }
-  .patient-avatar {
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    background: var(--teal-light);
-    color: var(--teal);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 600;
-    flex-shrink: 0;
-  }
-  .patient-info { flex: 1; }
-  .patient-name { font-size: 14px; font-weight: 500; color: var(--ink); }
-  .patient-meta { font-size: 12px; color: var(--ink-muted); margin-top: 1px; }
-  .patient-actions { display: flex; align-items: center; gap: 8px; }
+/* DIVIDER */
+.divider{height:1px;background:var(--border-light);margin:18px 0}
 
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 11px; font-weight: 500;
-    padding: 3px 9px;
-    border-radius: 20px;
-  }
-  .badge-green { background: #d1fae5; color: #065f46; }
-  .badge-amber { background: var(--amber-light); color: #92400e; }
-  .badge-red { background: var(--red-light); color: var(--red); }
-  .badge-gray { background: #f3f4f6; color: #6b7280; }
-  .badge-teal { background: var(--teal-light); color: var(--teal); }
+/* SECTION LABEL */
+.section-label{font-size:10px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
 
-  /* BRIEF VIEW */
-  .brief-section { margin-bottom: 20px; }
-  .brief-section-label {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-    color: var(--ink-muted);
-    margin-bottom: 8px;
-  }
-  .brief-content {
-    background: var(--surface);
-    border-radius: 10px;
-    padding: 14px 16px;
-    font-size: 14px;
-    color: var(--ink-soft);
-    line-height: 1.65;
-    border-left: 3px solid var(--teal);
-  }
-  .brief-content.flag { border-left-color: var(--amber); }
-  .brief-content.red-flag { border-left-color: var(--red); }
-  .brief-empty {
-    font-size: 13px;
-    color: var(--ink-muted);
-    font-style: italic;
-  }
+/* COMPLIANCE DOTS */
+.compliance-bar{display:flex;gap:5px;align-items:center}
+.compliance-dot{width:10px;height:10px;border-radius:50%}
 
-  /* FORMS */
-  .form-group { margin-bottom: 18px; }
-  .form-label { display: block; font-size: 12px; font-weight: 500; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
-  .form-input, .form-textarea, .form-select {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--white);
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--teal); }
-  .form-textarea { resize: vertical; min-height: 90px; }
-  .form-select { cursor: pointer; }
+/* SPARKLINE */
+.spark-svg{display:block}
 
-  .btn-teal {
-    padding: 10px 20px;
-    background: var(--teal);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  .btn-teal:hover { background: #166b5c; }
-  .btn-teal:disabled { background: var(--ink-muted); cursor: not-allowed; }
+/* PROGRESS BAR */
+.progress-wrap{background:var(--surface-warm);border-radius:6px;height:7px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:6px;transition:width 0.5s ease}
 
-  .btn-outline {
-    padding: 10px 20px;
-    background: transparent;
-    color: var(--ink-soft);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .btn-outline:hover { border-color: var(--ink-soft); color: var(--ink); }
+/* CHECK ITEM */
+.check-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border-light)}
+.check-item:last-child{border-bottom:none}
+.check-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border);background:var(--white);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.check-box.done{background:var(--teal);border-color:var(--teal)}
 
-  .btn-sm {
-    padding: 6px 14px;
-    font-size: 12px;
-    border-radius: 8px;
-  }
+/* CHECKIN CARD */
+.checkin-card{background:var(--surface);border-radius:10px;padding:13px 15px;margin-bottom:10px;border-left:3px solid transparent}
 
-  /* MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(15,17,23,0.5);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 1000;
-    padding: 24px;
-  }
-  .modal {
-    background: var(--white);
-    border-radius: 18px;
-    width: 100%;
-    max-width: 560px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-lg);
-  }
-  .modal-header {
-    padding: 22px 26px 18px;
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .modal-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; color: var(--ink); }
-  .modal-close {
-    width: 30px; height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: var(--surface);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--ink-muted);
-    font-size: 18px;
-    line-height: 1;
-    transition: background 0.15s;
-  }
-  .modal-close:hover { background: var(--border); }
-  .modal-body { padding: 24px 26px; }
-  .modal-footer { padding: 16px 26px 22px; display: flex; gap: 10px; justify-content: flex-end; }
+/* IMPROVEMENT LOG */
+.improvement-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light)}
+.improvement-item:last-child{border-bottom:none}
 
-  /* TABS */
-  .tabs { display: flex; gap: 4px; background: var(--surface-warm); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
-  .tab {
-    flex: 1; padding: 8px 16px;
-    border: none; border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px; font-weight: 500;
-    cursor: pointer;
-    color: var(--ink-muted);
-    background: transparent;
-    transition: all 0.15s;
-  }
-  .tab.active { background: var(--white); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+/* REPORT */
+.report-page{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:28px 32px;margin-bottom:16px}
+.report-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--teal)}
+.report-title{font-family:'Lora',serif;font-size:22px;color:var(--ink);font-weight:400;margin-bottom:3px}
+.report-sub{font-size:12px;color:var(--ink-muted)}
+.week-row{display:grid;grid-template-columns:80px 1fr 60px 1fr;gap:10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border-light);font-size:12px}
+.week-row:last-child{border-bottom:none}
 
-  /* DIVIDER */
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+/* DOCTOR PATIENT CARD */
+.doctor-patient-card{background:var(--white);border-radius:12px;border:1px solid var(--border);padding:18px 20px;margin-bottom:14px}
 
-  /* GRID */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--white);padding:11px 18px;border-radius:9px;font-size:13px;z-index:999;box-shadow:var(--shadow-lg);animation:slideup 0.3s ease}
+@keyframes slideup{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-  /* LOADING */
-  .loading { display: flex; align-items: center; justify-content: center; padding: 48px; color: var(--ink-muted); font-size: 14px; gap: 10px; }
-  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--teal); border-radius: 50%; animation: spin 0.7s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* LOADING */
+.loading{display:flex;align-items:center;justify-content:center;min-height:100vh;gap:10px;color:var(--ink-muted);font-size:14px}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-  /* EMPTY STATE */
-  .empty-state { text-align: center; padding: 48px 24px; }
-  .empty-icon { font-size: 36px; margin-bottom: 12px; }
-  .empty-title { font-size: 15px; font-weight: 500; color: var(--ink-soft); margin-bottom: 6px; }
-  .empty-sub { font-size: 13px; color: var(--ink-muted); }
+/* EMPTY */
+.empty{text-align:center;padding:44px 24px}
+.empty-icon{font-size:32px;margin-bottom:10px}
+.empty-title{font-size:14px;font-weight:500;color:var(--ink-soft);margin-bottom:5px}
+.empty-sub{font-size:12px;color:var(--ink-muted)}
 
-  /* SUCCESS */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--ink);
-    color: var(--white);
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 14px;
-    z-index: 2000;
-    box-shadow: var(--shadow-lg);
-    animation: slideUp 0.3s ease;
-  }
-  @keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+/* SUMMARY BOX */
+.summary-box{background:var(--surface);border-radius:9px;padding:13px 15px;font-size:13px;color:var(--ink-soft);line-height:1.7;border-left:3px solid var(--teal)}
+.summary-box.amber{border-left-color:var(--amber)}
+.summary-box.green{border-left-color:#10b981;background:#f0fdf4}
 
-  /* ANALYTICS */
-  .analytics-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
-  .progress-bar-wrap { background: var(--surface); border-radius: 6px; height: 8px; overflow: hidden; margin-top: 8px; }
-  .progress-bar-fill { height: 100%; border-radius: 6px; background: var(--teal); transition: width 0.5s ease; }
-  .sentiment-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-  .sentiment-label { font-size: 13px; color: var(--ink-soft); width: 80px; }
-  .sentiment-bar { flex: 1; background: var(--surface); border-radius: 6px; height: 8px; overflow: hidden; }
-  .sentiment-fill-positive { height: 100%; border-radius: 6px; background: #10b981; }
-  .sentiment-fill-neutral { height: 100%; border-radius: 6px; background: #6b7280; }
-  .sentiment-fill-concerned { height: 100%; border-radius: 6px; background: var(--amber); }
-  .sentiment-count { font-size: 12px; color: var(--ink-muted); width: 30px; text-align: right; }
-
-  .section-gap { margin-bottom: 24px; }
-
-  @media (max-width: 768px) {
-    .sidebar { width: 200px; }
-    .main { margin-left: 200px; padding: 24px; }
-    .stats-row { grid-template-columns: 1fr; }
-    .analytics-grid { grid-template-columns: 1fr; }
-  }
+@media(max-width:768px){
+  .sidebar{width:190px}
+  .main{margin-left:190px;padding:20px}
+  .stats-row{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root"><div class="loading"><div class="spinner"></div>Loading Presense…</div></div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,query,where,serverTimestamp,getDoc,deleteDoc}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyALRPfClv-IXL4serb30gWY-cqZ18TVWx0",
-  authDomain: "presense-67850.firebaseapp.com",
-  projectId: "presense-67850",
-  storageBucket: "presense-67850.firebasestorage.app",
-  messagingSenderId: "183044888871",
-  appId: "1:183044888871:web:0517ec3371c9322b9a3102"
+const firebaseConfig={
+  apiKey:"AIzaSyALRPfClv-IXL4serb30gWY-cqZ18TVWx0",
+  authDomain:"presense-67850.firebaseapp.com",
+  projectId:"presense-67850",
+  storageBucket:"presense-67850.firebasestorage.app",
+  messagingSenderId:"183044888871",
+  appId:"1:183044888871:web:0517ec3371c9322b9a3102"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
 // ── STATE ──────────────────────────────────────────────
-let state = {
-  user: null,
-  userProfile: null,
-  loading: true,
-  page: 'dashboard',
-  patients: [],
-  doctors: [],
-  selectedPatient: null,
-  modal: null,
-  toast: null,
-  briefForm: { mindState: '', suggestedFraming: '', flag: '', flagLevel: 'none' },
-  patientForm: { name: '', age: '', condition: '', doctorId: '', nextAppointment: '' },
-  doctorForm: { name: '', email: '', specialty: '' },
+let state={
+  user:null,profile:null,loading:true,
+  page:'dashboard',
+  cases:[],doctors:[],
+  modal:null,modalData:null,
+  activeTab:'careplan',
+  toast:null,
+  forms:{
+    login:{email:'',password:'',error:'',busy:false},
+    addCase:{name:'',age:'',condition:'',pathway:'',doctorId:'',nextAppointment:'',medicalRecs:''},
+    addTarget:{label:''},
+    addCheckin:{summary:'',compliance:3,barriers:'',clinicalNote:''},
+    addImprovement:{note:'',attribution:'behavioral'},
+    editSummary:''
+  }
 };
 
-function setState(updates) {
-  state = { ...state, ...updates };
-  render();
+function set(updates){state={...state,...updates};render()}
+function setForm(key,updates){set({forms:{...state.forms,[key]:{...state.forms[key],...updates}}})}
+function showToast(msg){set({toast:msg});setTimeout(()=>set({toast:null}),3000)}
+
+// ── FIREBASE ───────────────────────────────────────────
+async function getUserProfile(uid){
+  try{const s=await getDoc(doc(db,'users',uid));return s.exists()?s.data():null}
+  catch(e){console.error(e);return null}
 }
 
-// ── FIREBASE HELPERS ───────────────────────────────────
-async function getUserProfile(uid) {
-  const snap = await getDoc(doc(db, 'users', uid));
-  return snap.exists() ? snap.data() : null;
-}
-
-async function loadPatients() {
-  let q;
-  if (state.userProfile?.role === 'doctor') {
-    q = query(collection(db, 'patients'), where('doctorId', '==', state.user.uid));
-  } else {
-    q = query(collection(db, 'patients'));
-  }
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
-
-async function loadDoctors() {
-  const q = query(collection(db, 'users'), where('role', '==', 'doctor'));
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-}
-
-async function refreshData() {
-  const [patients, doctors] = await Promise.all([loadPatients(), loadDoctors()]);
-  setState({ patients, doctors });
-}
-
-function showToast(msg) {
-  setState({ toast: msg });
-  setTimeout(() => setState({ toast: null }), 3000);
-}
-
-// ── AUTH ───────────────────────────────────────────────
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    try {
-      const profile = await getUserProfile(user.uid);
-      const [patients, doctors] = await Promise.all([
-        loadPatients().catch(() => []),
-        loadDoctors().catch(() => [])
-      ]);
-      setState({ user, userProfile: profile, loading: false, patients, doctors });
-    } catch(e) {
-      console.error('Load error:', e);
-      const profile = { role: 'ccl', name: user.email };
-      setState({ user, userProfile: profile, loading: false, patients: [], doctors: [] });
+async function loadCases(){
+  try{
+    let q;
+    if(state.profile?.role==='doctor'){
+      q=query(collection(db,'cases'),where('doctorId','==',state.user.uid));
+    }else{
+      q=query(collection(db,'cases'),where('createdBy','==',state.user.uid));
     }
-  } else {
-    setState({ user: null, userProfile: null, loading: false, patients: [], doctors: [] });
+    const s=await getDocs(q);
+    return s.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){console.error(e);return[]}
+}
+
+async function loadDoctors(){
+  try{
+    const q=query(collection(db,'users'),where('role','==','doctor'));
+    const s=await getDocs(q);
+    return s.docs.map(d=>({id:d.id,...d.data()}));
+  }catch(e){return[]}
+}
+
+async function refresh(){
+  const[cases,doctors]=await Promise.all([loadCases(),loadDoctors()]);
+  set({cases,doctors});
+}
+
+onAuthStateChanged(auth,async(user)=>{
+  if(user){
+    try{
+      const profile=await getUserProfile(user.uid);
+      const[cases,doctors]=await Promise.all([loadCases().catch(()=>[]),loadDoctors().catch(()=>[])]);
+      set({user,profile,loading:false,cases,doctors,page:'dashboard'});
+    }catch(e){
+      set({user,profile:{role:'ccl',name:user.email},loading:false,cases:[],doctors:[]});
+    }
+  }else{
+    set({user:null,profile:null,loading:false,cases:[],doctors:[]});
   }
 });
 
-async function handleLogin(email, password) {
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-  } catch (e) {
-    return e.message.replace('Firebase: ', '').replace(/ \(auth\/.*\)\.?/, '');
+async function doLogin(){
+  const{email,password}=state.forms.login;
+  if(!email||!password)return;
+  setForm('login',{busy:true,error:''});
+  try{
+    await signInWithEmailAndPassword(auth,email,password);
+  }catch(e){
+    setForm('login',{busy:false,error:'Invalid email or password'});
   }
-  return null;
 }
 
-async function handleSignOut() {
-  await signOut(auth);
-}
+async function doSignOut(){await signOut(auth)}
 
-// ── ACTIONS ────────────────────────────────────────────
-async function addPatient(data) {
-  await addDoc(collection(db, 'patients'), {
-    ...data,
-    createdBy: state.user.uid,
-    createdAt: serverTimestamp(),
-    appointmentKept: null,
-    sentiment: null,
-    queriesHandled: 0,
-    brief: null,
+// ── CASE ACTIONS ───────────────────────────────────────
+async function createCase(){
+  const f=state.forms.addCase;
+  if(!f.name||!f.doctorId)return;
+  const doctor=state.doctors.find(d=>d.id===f.doctorId);
+  await addDoc(collection(db,'cases'),{
+    name:f.name,age:f.age,condition:f.condition,pathway:f.pathway,
+    doctorId:f.doctorId,doctorName:doctor?.name||'',specialty:doctor?.specialty||'',
+    nextAppointment:f.nextAppointment,medicalRecs:f.medicalRecs,
+    createdBy:state.user.uid,createdAt:serverTimestamp(),
+    appointmentKept:null,behavioralTargets:[],checkIns:[],
+    improvements:[],preSummary:''
   });
-  await refreshData();
-  showToast('Patient added successfully');
+  await refresh();
+  set({modal:null});
+  setForm('addCase',{name:'',age:'',condition:'',pathway:'',doctorId:'',nextAppointment:'',medicalRecs:''});
+  showToast('Case added');
 }
 
-async function saveBrief(patientId, brief) {
-  await updateDoc(doc(db, 'patients', patientId), {
-    brief,
-    briefUpdatedAt: serverTimestamp(),
-  });
-  await refreshData();
-  showToast('Brief saved');
+async function addTarget(caseId){
+  const label=state.forms.addTarget.label.trim();
+  if(!label)return;
+  const c=state.cases.find(x=>x.id===caseId);
+  const targets=[...(c.behavioralTargets||[]),{id:Date.now().toString(),label,achieved:false}];
+  await updateDoc(doc(db,'cases',caseId),{behavioralTargets:targets});
+  await refresh();
+  const updated=state.cases.find(x=>x.id===caseId)||{...c,behavioralTargets:targets};
+  set({modalData:{...state.modalData,behavioralTargets:targets}});
+  setForm('addTarget',{label:''});
+  showToast('Target added');
 }
 
-async function markAppointment(patientId, kept) {
-  await updateDoc(doc(db, 'patients', patientId), {
-    appointmentKept: kept,
-    lastAppointmentDate: serverTimestamp(),
-  });
-  await refreshData();
-  showToast(kept ? 'Marked as attended' : 'Marked as missed');
+async function toggleTarget(caseId,targetId){
+  const c=state.cases.find(x=>x.id===caseId);
+  const targets=(c.behavioralTargets||[]).map(t=>t.id===targetId?{...t,achieved:!t.achieved}:t);
+  await updateDoc(doc(db,'cases',caseId),{behavioralTargets:targets});
+  await refresh();
+  set({modalData:{...state.modalData,behavioralTargets:targets}});
 }
 
-async function updateSentiment(patientId, sentiment) {
-  await updateDoc(doc(db, 'patients', patientId), { sentiment });
-  await refreshData();
-  showToast('Sentiment updated');
+async function addCheckin(caseId){
+  const f=state.forms.addCheckin;
+  if(!f.summary)return;
+  const c=state.cases.find(x=>x.id===caseId);
+  const checkIns=[...(c.checkIns||[]),{
+    id:Date.now().toString(),
+    date:new Date().toISOString().split('T')[0],
+    summary:f.summary,compliance:f.compliance,
+    barriers:f.barriers,clinicalNote:f.clinicalNote
+  }];
+  await updateDoc(doc(db,'cases',caseId),{checkIns});
+  await refresh();
+  const updated=state.cases.find(x=>x.id===caseId);
+  set({modal:'view',modalData:updated,activeTab:'checkins'});
+  setForm('addCheckin',{summary:'',compliance:3,barriers:'',clinicalNote:''});
+  showToast('Check-in saved');
 }
 
-async function incrementQuery(patientId) {
-  const p = state.patients.find(p => p.id === patientId);
-  if (!p) return;
-  await updateDoc(doc(db, 'patients', patientId), { queriesHandled: (p.queriesHandled || 0) + 1 });
-  await refreshData();
-  showToast('Query logged');
+async function addImprovement(caseId){
+  const f=state.forms.addImprovement;
+  if(!f.note)return;
+  const c=state.cases.find(x=>x.id===caseId);
+  const improvements=[...(c.improvements||[]),{
+    id:Date.now().toString(),
+    date:new Date().toISOString().split('T')[0],
+    note:f.note,attribution:f.attribution
+  }];
+  await updateDoc(doc(db,'cases',caseId),{improvements});
+  await refresh();
+  const updated=state.cases.find(x=>x.id===caseId);
+  set({modalData:updated});
+  setForm('addImprovement',{note:'',attribution:'behavioral'});
+  showToast('Improvement logged');
 }
 
-async function createDoctorAccount(data) {
-  // Create user profile doc (doctor must be created via Firebase Auth separately)
-  // For pilot: store doctor info, link by email
-  await addDoc(collection(db, 'doctor_invites'), {
-    ...data,
-    createdAt: serverTimestamp(),
-    status: 'pending'
-  });
-  showToast('Doctor invite created. Ask them to register with this email.');
+async function saveSummary(caseId){
+  await updateDoc(doc(db,'cases',caseId),{preSummary:state.forms.editSummary});
+  await refresh();
+  showToast('Summary saved');
 }
 
-// ── ANALYTICS ─────────────────────────────────────────
-function computeAnalytics(patients) {
-  const total = patients.length;
-  const withAppointment = patients.filter(p => p.appointmentKept !== null);
-  const kept = patients.filter(p => p.appointmentKept === true).length;
-  const retention = withAppointment.length > 0 ? Math.round((kept / withAppointment.length) * 100) : null;
-  const totalQueries = patients.reduce((s, p) => s + (p.queriesHandled || 0), 0);
-  const positive = patients.filter(p => p.sentiment === 'positive').length;
-  const neutral = patients.filter(p => p.sentiment === 'neutral').length;
-  const concerned = patients.filter(p => p.sentiment === 'concerned').length;
-  return { total, retention, totalQueries, positive, neutral, concerned, withBrief: patients.filter(p => p.brief).length };
+async function markAppointment(caseId,kept){
+  await updateDoc(doc(db,'cases',caseId),{appointmentKept:kept});
+  await refresh();
+  const updated=state.cases.find(x=>x.id===caseId);
+  set({modalData:updated});
+  showToast(kept?'Marked attended':'Marked missed');
 }
 
-// ── RENDER HELPERS ─────────────────────────────────────
-function initials(name) {
-  return (name || '?').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+// ── AUTO-DRAFT SUMMARY ─────────────────────────────────
+function draftSummary(c){
+  const checkIns=c.checkIns||[];
+  const targets=c.behavioralTargets||[];
+  const improvements=c.improvements||[];
+  if(!checkIns.length)return'No check-ins recorded yet. Log at least one check-in to generate a summary.';
+
+  const avg=checkIns.reduce((s,ci)=>s+ci.compliance,0)/checkIns.length;
+  const last=checkIns[checkIns.length-1];
+  const first=checkIns[0];
+  const trend=checkIns.length>1?(last.compliance>first.compliance?'improving':last.compliance<first.compliance?'declining':'stable'):'early stage';
+  const done=targets.filter(t=>t.achieved).length;
+  const total=targets.length;
+  const barriers=[...new Set(checkIns.filter(ci=>ci.barriers).map(ci=>ci.barriers))].slice(0,2).join('; ');
+  const improvementLine=improvements.length?`Clinical improvements noted: ${improvements.map(i=>i.note).join('; ')}. `:'';
+
+  let summary=`${c.name} has completed ${checkIns.length} check-in${checkIns.length>1?'s':''} with an average compliance score of ${avg.toFixed(1)}/5. `;
+  summary+=`Compliance trend is ${trend}. `;
+  if(total>0)summary+=`${done} of ${total} behavioral target${total>1?'s':''} achieved. `;
+  if(barriers)summary+=`Main barriers identified: ${barriers}. `;
+  if(improvementLine)summary+=improvementLine;
+  summary+=`Last check-in (${last.date}): ${last.summary.slice(0,120)}${last.summary.length>120?'…':''}`;
+  return summary;
 }
 
-function formatDate(ts) {
-  if (!ts) return '—';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+// ── HELPERS ────────────────────────────────────────────
+function initials(n){return(n||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
+function avgComp(checkIns){if(!checkIns?.length)return null;return+(checkIns.reduce((s,c)=>s+c.compliance,0)/checkIns.length).toFixed(1)}
+function compColor(v){return v>=4?'#10b981':v>=3?'#1a6b5c':v>=2?'#d97706':'#c0392b'}
+function weeksSince(d){if(!d)return 0;return Math.floor((Date.now()-new Date(d))/(1000*60*60*24*7))}
+const COLORS=['#1a6b5c','#5b21b6','#b45309','#c0392b','#0891b2','#059669'];
+
+function sparklineSVG(data,color='#1a6b5c'){
+  if(!data||data.length<2)return'';
+  const w=70,h=28,min=1,max=5;
+  const pts=data.map((v,i)=>{
+    const x=(i/(data.length-1))*w;
+    const y=h-((v-min)/(max-min))*h;
+    return`${x},${y}`;
+  }).join(' ');
+  const circles=data.map((v,i)=>{
+    const x=(i/(data.length-1))*w;
+    const y=h-((v-min)/(max-min))*h;
+    return`<circle cx="${x}" cy="${y}" r="2.5" fill="${color}"/>`;
+  }).join('');
+  return`<svg width="${w}" height="${h}" class="spark-svg"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${circles}</svg>`;
 }
 
 // ── RENDER ─────────────────────────────────────────────
-function render() {
-  const root = document.getElementById('root');
-  if (state.loading) {
-    root.innerHTML = `<div class="loading"><div class="spinner"></div> Loading Presense…</div>`;
-    return;
-  }
-  if (!state.user || !state.userProfile) {
-    root.innerHTML = renderAuth();
-    attachAuthHandlers();
-    return;
-  }
-  root.innerHTML = renderApp();
+function render(){
+  const root=document.getElementById('root');
+  if(state.loading){root.innerHTML='<div class="loading"><div class="spinner"></div>Loading Presense…</div>';return}
+  if(!state.user||!state.profile){root.innerHTML=renderAuth();attachAuthHandlers();return}
+  root.innerHTML=renderApp();
   attachAppHandlers();
-  if (state.toast) {
-    const t = document.createElement('div');
-    t.className = 'toast';
-    t.textContent = state.toast;
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3100);
+  if(state.toast){
+    const t=document.createElement('div');t.className='toast';t.textContent=state.toast;
+    document.body.appendChild(t);setTimeout(()=>t.remove(),3100);
   }
 }
 
-// ── AUTH SCREEN ────────────────────────────────────────
-function renderAuth() {
-  return `
-  <div class="auth-wrap">
+// ── AUTH ───────────────────────────────────────────────
+function renderAuth(){
+  const f=state.forms.login;
+  return`<div class="auth-wrap">
     <div class="auth-card">
-      <div class="auth-logo">
-        <div class="auth-logo-mark">
-          <div class="logo-icon">
-            <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.8">
-              <circle cx="10" cy="7" r="3.5"/>
-              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
-              <path d="M14 3.5c1.2.6 2 1.9 2 3.5" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <span class="logo-name">Presense</span>
-        </div>
-        <div class="auth-tagline">Integrated psychological care for your patients</div>
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:5px">
+        <div class="logo-mark"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.8"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg></div>
+        <span class="auth-logo-name">Presense</span>
       </div>
-      <div class="auth-title">Sign in to continue</div>
-      <div id="auth-error" style="display:none" class="auth-error"></div>
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="login-email" placeholder="your@email.com" />
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="••••••••" />
-      </div>
-      <button class="btn-primary" id="login-btn">Sign In</button>
+      <div class="auth-tagline">Behavioral Medicine Platform · CCL</div>
+      <div class="auth-title">Sign in</div>
+      ${f.error?`<div class="auth-error">${f.error}</div>`:''}
+      <div class="field"><label>Email</label><input type="email" id="login-email" value="${f.email}" placeholder="your@email.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="login-password" value="${f.password}" placeholder="••••••••"/></div>
+      <button class="btn-primary" id="login-btn" ${f.busy?'disabled':''}>${f.busy?'Signing in…':'Sign in'}</button>
     </div>
   </div>`;
 }
 
-function attachAuthHandlers() {
-  const btn = document.getElementById('login-btn');
-  const emailEl = document.getElementById('login-email');
-  const passEl = document.getElementById('login-password');
-  const errEl = document.getElementById('auth-error');
-
-  async function doLogin() {
-    const email = emailEl.value.trim();
-    const pass = passEl.value;
-    if (!email || !pass) return;
-    btn.disabled = true; btn.textContent = 'Signing in…';
-    const err = await handleLogin(email, pass);
-    if (err) {
-      errEl.style.display = 'block';
-      errEl.textContent = 'Invalid email or password. Please try again.';
-      btn.disabled = false; btn.textContent = 'Sign In';
-    }
-  }
-
-  btn.addEventListener('click', doLogin);
-  passEl.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+function attachAuthHandlers(){
+  document.getElementById('login-btn')?.addEventListener('click',doLogin);
+  document.getElementById('login-password')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  document.getElementById('login-email')?.addEventListener('input',e=>setForm('login',{email:e.target.value}));
+  document.getElementById('login-password')?.addEventListener('input',e=>setForm('login',{password:e.target.value}));
 }
 
 // ── APP SHELL ──────────────────────────────────────────
-function renderApp() {
-  const role = state.userProfile?.role;
-  const isDoctor = role === 'doctor';
-  const isCCL = role === 'ccl' || role === 'admin';
+function renderApp(){
+  const isDoctor=state.profile?.role==='doctor';
+  const navItems=isDoctor
+    ?[{id:'dashboard',label:'My Patients'},{id:'analytics',label:'Outcomes'}]
+    :[{id:'dashboard',label:'Dashboard'},{id:'cases',label:'Cases'},{id:'doctors',label:'Doctors'},{id:'analytics',label:'Outcomes'},{id:'reports',label:'Monthly Reports'}];
 
-  const navItems = isDoctor
-    ? [
-        { id: 'dashboard', icon: iconDashboard, label: 'Dashboard' },
-        { id: 'patients', icon: iconPatients, label: 'My Patients' },
-        { id: 'analytics', icon: iconAnalytics, label: 'Analytics' },
-      ]
-    : [
-        { id: 'dashboard', icon: iconDashboard, label: 'Dashboard' },
-        { id: 'patients', icon: iconPatients, label: 'Patients' },
-        { id: 'doctors', icon: iconDoctors, label: 'Doctors' },
-        { id: 'analytics', icon: iconAnalytics, label: 'Analytics' },
-        { id: 'team', icon: iconTeam, label: 'Team' },
-      ];
-
-  const name = state.userProfile?.name || state.user.email;
-  const email = state.user.email;
-
-  return `
-  <div class="app-shell">
+  return`<div class="app-shell">
     <nav class="sidebar">
       <div class="sidebar-header">
         <div class="sidebar-logo">
-          <div class="logo-icon" style="width:30px;height:30px;">
-            <svg viewBox="0 0 20 20" fill="none" stroke="white" stroke-width="1.8" style="width:16px;height:16px;">
-              <circle cx="10" cy="7" r="3.5"/>
-              <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/>
-            </svg>
-          </div>
-          <span class="sidebar-logo-name">Presense</span>
+          <div class="logo-mark"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="white" stroke-width="1.8"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5"/></svg></div>
+          <span class="logo-name">Presense</span>
         </div>
-        <span class="sidebar-role-badge ${isDoctor ? 'role-doctor' : 'role-ccl'}">${isDoctor ? 'Doctor' : 'CCL Team'}</span>
+        <div class="logo-sub">Behavioral Medicine</div>
+        <span class="role-pill ${isDoctor?'role-doctor':'role-ccl'}">${isDoctor?'Doctor':'CCL Team'}</span>
       </div>
       <div class="sidebar-nav">
-        ${navItems.map(n => `
-          <button class="nav-item ${state.page === n.id ? 'active' : ''}" data-page="${n.id}">
-            ${n.icon} ${n.label}
-          </button>
-        `).join('')}
+        ${navItems.map(n=>`<button class="nav-item${state.page===n.id?' active':''}" data-page="${n.id}">${n.label}</button>`).join('')}
       </div>
       <div class="sidebar-footer">
-        <div class="sidebar-user">
-          <div class="user-avatar">${initials(name)}</div>
-          <div class="user-info">
-            <div class="user-name">${name}</div>
-            <div class="user-email">${email}</div>
-          </div>
+        <div class="user-row">
+          <div class="user-name">${state.profile?.name||state.user.email.split('@')[0]}</div>
+          <div class="user-email">${state.user.email}</div>
         </div>
         <button class="btn-signout" id="signout-btn">Sign out</button>
       </div>
     </nav>
-    <main class="main">
-      ${renderPage()}
-    </main>
-    ${state.modal ? renderModal() : ''}
+    <main class="main">${renderPage()}</main>
+    ${state.modal?renderModal():''}
   </div>`;
 }
 
 // ── PAGES ──────────────────────────────────────────────
-function renderPage() {
-  switch (state.page) {
-    case 'dashboard': return renderDashboard();
-    case 'patients': return renderPatients();
-    case 'doctors': return renderDoctors();
-    case 'analytics': return renderAnalytics();
-    case 'team': return renderTeam();
-    default: return renderDashboard();
+function renderPage(){
+  if(state.profile?.role==='doctor'){
+    if(state.page==='analytics')return renderAnalytics();
+    return renderDoctorDashboard();
+  }
+  switch(state.page){
+    case'dashboard':return renderDashboard();
+    case'cases':return renderCases();
+    case'doctors':return renderDoctors();
+    case'analytics':return renderAnalytics();
+    case'reports':return renderReports();
+    default:return renderDashboard();
   }
 }
 
-function renderDashboard() {
-  const role = state.userProfile?.role;
-  const isDoctor = role === 'doctor';
-  const stats = computeAnalytics(state.patients);
-  const today = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
-  const name = state.userProfile?.name || 'there';
+// ── DASHBOARD (CCL) ────────────────────────────────────
+function renderDashboard(){
+  const total=state.cases.length;
+  const withCI=state.cases.filter(c=>c.checkIns?.length);
+  const avgAll=withCI.length?+(withCI.reduce((s,c)=>s+avgComp(c.checkIns),0)/withCI.length*20).toFixed(0):0;
+  const kept=state.cases.filter(c=>c.appointmentKept===true).length;
+  const tracked=state.cases.filter(c=>c.appointmentKept!==null).length;
+  const retentionPct=tracked?Math.round(kept/tracked*100):0;
 
-  const todayPatients = state.patients.filter(p => {
-    if (!p.nextAppointment) return false;
-    const d = new Date(p.nextAppointment);
-    const now = new Date();
-    return d.toDateString() === now.toDateString();
-  });
+  const upcoming=state.cases.filter(c=>c.nextAppointment&&c.appointmentKept===null).sort((a,b)=>new Date(a.nextAppointment)-new Date(b.nextAppointment));
+  const recentCI=state.cases.flatMap(c=>(c.checkIns||[]).map(ci=>({...ci,caseName:c.name,caseId:c.id}))).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,4);
 
-  const recentPatients = state.patients.slice(0, 5);
-  const flagged = state.patients.filter(p => p.brief?.flagLevel === 'high');
-
-  return `
+  return`
   <div class="page-header">
-    <div class="page-title">Good morning${isDoctor ? ', Dr.' : ''} ${name.split(' ')[0]} 👋</div>
-    <div class="page-subtitle">${today}</div>
+    <div class="page-title">Good morning, ${state.profile?.name?.split(' ')[0]||'there'}</div>
+    <div class="page-sub">${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})}</div>
   </div>
-
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-label">Total Patients</div>
-      <div class="stat-value">${stats.total}</div>
-      <div class="stat-sub">under care</div>
+    <div class="stat-card" style="border-left-color:#1a6b5c">
+      <div class="stat-label">Active Cases</div>
+      <div class="stat-val" style="color:#1a6b5c">${total}</div>
+      <div class="stat-sub">across ${state.doctors.length} doctors</div>
     </div>
-    <div class="stat-card stat-teal">
-      <div class="stat-label">Retention Rate</div>
-      <div class="stat-value">${stats.retention !== null ? stats.retention + '%' : '—'}</div>
-      <div class="stat-sub">${stats.retention !== null ? 'of appointments kept' : 'no data yet'}</div>
+    <div class="stat-card" style="border-left-color:#5b21b6">
+      <div class="stat-label">Avg Adherence</div>
+      <div class="stat-val" style="color:#5b21b6">${avgAll}%</div>
+      <div class="stat-sub">behavioral compliance</div>
     </div>
-    <div class="stat-card stat-amber">
-      <div class="stat-label">Queries Handled</div>
-      <div class="stat-value">${stats.totalQueries}</div>
-      <div class="stat-sub">by CCL team</div>
+    <div class="stat-card" style="border-left-color:#b45309">
+      <div class="stat-label">Appointment Retention</div>
+      <div class="stat-val" style="color:#b45309">${retentionPct}%</div>
+      <div class="stat-sub">${kept}/${tracked} appointments kept</div>
     </div>
   </div>
 
-  ${flagged.length > 0 ? `
-  <div class="section-gap">
-    <div class="card" style="border-color: #fde68a;">
-      <div class="card-header" style="background: var(--amber-light);">
-        <div class="card-title" style="color: #92400e;">⚠️ Attention Required (${flagged.length})</div>
-      </div>
-      <div class="card-body" style="padding: 0;">
-        ${flagged.map(p => `
-          <div class="patient-row" data-action="view-patient" data-id="${p.id}">
-            <div class="patient-avatar">${initials(p.name)}</div>
-            <div class="patient-info">
-              <div class="patient-name">${p.name}</div>
-              <div class="patient-meta">${p.brief?.flag || 'Flagged for attention'}</div>
-            </div>
-            <span class="badge badge-amber">Review brief</span>
-          </div>
-        `).join('')}
-      </div>
+  ${upcoming.length?`
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Upcoming appointments — pre-visit summary needed</div>
     </div>
-  </div>
-  ` : ''}
+    ${upcoming.map((c,i)=>`
+    <div class="case-row" data-action="open-case" data-id="${c.id}">
+      <div class="avatar" style="background:${COLORS[i%COLORS.length]}">${initials(c.name)}</div>
+      <div style="flex:1">
+        <div class="case-name">${c.name}</div>
+        <div class="case-meta">${c.condition||'—'} · ${c.doctorName} · ${new Date(c.nextAppointment).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        ${c.preSummary?'<span class="badge" style="background:#d1fae5;color:#065f46">Summary ready ✓</span>':'<span class="badge" style="background:#fef3c7;color:#92400e">Summary needed</span>'}
+        ${avgComp(c.checkIns)?`<span class="badge" style="background:#f3f4f6;color:#374151">${avgComp(c.checkIns)}/5 avg</span>`:''}
+      </div>
+    </div>`).join('')}
+  </div>`:''}
 
   <div class="card">
     <div class="card-header">
-      <div class="card-title">Recent Patients</div>
-      <button class="btn-outline btn-sm" data-page="patients">View all</button>
+      <div class="card-title">Recent check-ins</div>
     </div>
-    <div style="padding: 0;">
-      ${recentPatients.length === 0
-        ? `<div class="empty-state"><div class="empty-icon">🏥</div><div class="empty-title">No patients yet</div><div class="empty-sub">${isDoctor ? 'Patients will appear here once CCL adds them.' : 'Add your first patient to get started.'}</div></div>`
-        : recentPatients.map(p => renderPatientRow(p, true)).join('')
-      }
-    </div>
+    ${recentCI.length?recentCI.map(ci=>`
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border-light);display:flex;gap:12px;align-items:flex-start">
+      <div style="width:32px;height:32px;border-radius:50%;background:${compColor(ci.compliance)};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:white;flex-shrink:0">${ci.compliance}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px">${ci.caseName}</div>
+        <div style="font-size:12px;color:var(--ink-soft)">${ci.summary.slice(0,100)}${ci.summary.length>100?'…':''}</div>
+        ${ci.barriers?`<div style="font-size:11px;color:var(--amber);margin-top:3px">Barrier: ${ci.barriers}</div>`:''}
+      </div>
+      <div style="font-size:11px;color:var(--ink-muted);white-space:nowrap">${ci.date}</div>
+    </div>`).join(''):`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No check-ins yet</div><div class="empty-sub">Start logging check-ins from your cases</div></div>`}
   </div>`;
 }
 
-function renderPatients() {
-  const isDoctor = state.userProfile?.role === 'doctor';
-  return `
-  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-    <div>
-      <div class="page-title">Patients</div>
-      <div class="page-subtitle">${state.patients.length} patient${state.patients.length !== 1 ? 's' : ''} under care</div>
-    </div>
-    ${!isDoctor ? `<button class="btn-teal" data-action="add-patient">+ Add Patient</button>` : ''}
-  </div>
-  <div class="card" style="overflow:visible;">
-    <div style="padding: 0;">
-      ${state.patients.length === 0
-        ? `<div class="empty-state"><div class="empty-icon">👤</div><div class="empty-title">No patients yet</div><div class="empty-sub">${isDoctor ? 'Patients will appear once CCL adds them.' : 'Add your first patient.'}</div></div>`
-        : state.patients.map(p => renderPatientRow(p, false)).join('')
-      }
-    </div>
-  </div>`;
-}
-
-function renderPatientRow(p, compact) {
-  const isDoctor = state.userProfile?.role === 'doctor';
-  const hasBrief = !!p.brief;
-  const flagLevel = p.brief?.flagLevel || 'none';
-
-  let statusBadge = '';
-  if (flagLevel === 'high') statusBadge = `<span class="badge badge-amber">⚠ Flag</span>`;
-  else if (hasBrief) statusBadge = `<span class="badge badge-green">Brief ready</span>`;
-  else statusBadge = `<span class="badge badge-gray">No brief</span>`;
-
-  let sentimentBadge = '';
-  if (p.sentiment === 'positive') sentimentBadge = `<span class="badge badge-green">😊 Positive</span>`;
-  else if (p.sentiment === 'concerned') sentimentBadge = `<span class="badge badge-amber">😟 Concerned</span>`;
-  else if (p.sentiment === 'neutral') sentimentBadge = `<span class="badge badge-gray">😐 Neutral</span>`;
-
-  return `
-  <div class="patient-row" data-action="view-patient" data-id="${p.id}">
-    <div class="patient-avatar">${initials(p.name)}</div>
-    <div class="patient-info">
-      <div class="patient-name">${p.name}</div>
-      <div class="patient-meta">${p.condition || 'No condition noted'} · Next: ${p.nextAppointment ? new Date(p.nextAppointment).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}</div>
-    </div>
-    <div class="patient-actions">
-      ${sentimentBadge}
-      ${statusBadge}
-    </div>
-  </div>`;
-}
-
-function renderDoctors() {
-  return `
-  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-    <div>
-      <div class="page-title">Doctors</div>
-      <div class="page-subtitle">Partner doctors in the Presense network</div>
-    </div>
-    <button class="btn-teal" data-action="add-doctor">+ Add Doctor</button>
-  </div>
-  <div class="card">
-    <div style="padding:0;">
-      ${state.doctors.length === 0
-        ? `<div class="empty-state"><div class="empty-icon">🩺</div><div class="empty-title">No doctors yet</div><div class="empty-sub">Add your first partner doctor.</div></div>`
-        : state.doctors.map(d => `
-          <div class="patient-row">
-            <div class="patient-avatar" style="background: var(--amber-light); color: var(--amber);">${initials(d.name)}</div>
-            <div class="patient-info">
-              <div class="patient-name">${d.name}</div>
-              <div class="patient-meta">${d.specialty || '—'} · ${d.email}</div>
-            </div>
-            <span class="badge badge-teal">${state.patients.filter(p => p.doctorId === d.id).length} patients</span>
-          </div>
-        `).join('')
-      }
-    </div>
-  </div>`;
-}
-
-function renderAnalytics() {
-  const patients = state.patients;
-  const stats = computeAnalytics(patients);
-  const sentimentTotal = stats.positive + stats.neutral + stats.concerned;
-
-  const doctorBreakdown = state.doctors.map(d => {
-    const dp = patients.filter(p => p.doctorId === d.id);
-    const ds = computeAnalytics(dp);
-    return { ...d, stats: ds, patientCount: dp.length };
-  }).filter(d => d.patientCount > 0);
-
-  return `
+// ── DOCTOR DASHBOARD ───────────────────────────────────
+function renderDoctorDashboard(){
+  const myCases=state.cases;
+  return`
   <div class="page-header">
-    <div class="page-title">Analytics</div>
-    <div class="page-subtitle">Monthly performance overview · ${new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}</div>
+    <div class="page-title">Your patients</div>
+    <div class="page-sub">Behavioral support progress — CCL team updates</div>
   </div>
-
-  <div class="analytics-grid">
-    <div class="card">
-      <div class="card-header"><div class="card-title">Patient Retention</div></div>
-      <div class="card-body">
-        <div style="font-family:'Fraunces',serif;font-size:48px;font-weight:400;color:var(--teal);line-height:1;">
-          ${stats.retention !== null ? stats.retention + '%' : '—'}
+  ${myCases.length===0?`<div class="card"><div class="empty"><div class="empty-icon">🩺</div><div class="empty-title">No patients yet</div><div class="empty-sub">CCL team will add patients referred to the program</div></div></div>`:''}
+  ${myCases.map((c,i)=>{
+    const avg=avgComp(c.checkIns);
+    const trend=(c.checkIns||[]).map(ci=>ci.compliance);
+    const done=(c.behavioralTargets||[]).filter(t=>t.achieved).length;
+    const total=(c.behavioralTargets||[]).length;
+    const improvements=c.improvements||[];
+    return`
+    <div class="doctor-patient-card" style="cursor:pointer" data-action="open-case" data-id="${c.id}">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+        <div class="avatar" style="background:${COLORS[i%COLORS.length]};width:44px;height:44px;font-size:15px">${initials(c.name)}</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:500;color:var(--ink);margin-bottom:2px">${c.name}, ${c.age||'—'}</div>
+          <div style="font-size:12px;color:var(--ink-muted)">${c.condition||'—'} · Week ${weeksSince(c.startDate)+1} of program · Next: ${c.nextAppointment?new Date(c.nextAppointment).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'—'}</div>
         </div>
-        <div style="font-size:13px;color:var(--ink-muted);margin-top:4px;">of scheduled appointments kept</div>
-        <div class="progress-bar-wrap" style="margin-top:16px;">
-          <div class="progress-bar-fill" style="width:${stats.retention || 0}%"></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${trend.length>=2?sparklineSVG(trend,avg>=3.5?'#10b981':'#d97706'):''}
+          ${avg?`<span style="font-size:13px;font-weight:600;color:${compColor(avg)}">${avg}/5</span>`:'<span style="font-size:12px;color:var(--ink-muted)">No data</span>'}
         </div>
-        <div style="font-size:12px;color:var(--ink-muted);margin-top:8px;">${stats.total} total patients tracked</div>
       </div>
-    </div>
-
-    <div class="card">
-      <div class="card-header"><div class="card-title">Queries Handled by CCL</div></div>
-      <div class="card-body">
-        <div style="font-family:'Fraunces',serif;font-size:48px;font-weight:400;color:var(--amber);line-height:1;">
-          ${stats.totalQueries}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:${c.preSummary?'14px':'0'}">
+        <div>
+          <div class="section-label">Behavioral targets</div>
+          <div>${(c.behavioralTargets||[]).map(t=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0"><span style="color:${t.achieved?'#10b981':'#d1d5db'}">${t.achieved?'✓':'○'}</span><span style="color:${t.achieved?'var(--ink)':'var(--ink-muted)'}">${t.label}</span></div>`).join('')||'<div style="font-size:12px;color:var(--ink-muted)">Not set yet</div>'}</div>
         </div>
-        <div style="font-size:13px;color:var(--ink-muted);margin-top:4px;">between-session queries managed</div>
-        <div style="font-size:12px;color:var(--ink-muted);margin-top:16px;">Time saved for doctors: ~${Math.round(stats.totalQueries * 8)} mins</div>
+        <div>
+          <div class="section-label">What improved</div>
+          ${improvements.length?improvements.slice(-2).map(imp=>`<div style="font-size:12px;color:var(--ink-soft);padding:3px 0;border-bottom:1px solid var(--border-light)"><span style="color:#10b981;margin-right:4px">↑</span>${imp.note} <span style="color:var(--ink-muted);font-size:10px">(${imp.date})</span></div>`).join(''):'<div style="font-size:12px;color:var(--ink-muted)">None recorded yet</div>'}
+        </div>
       </div>
-    </div>
-  </div>
-
-  <div class="card section-gap">
-    <div class="card-header"><div class="card-title">Patient Sentiment Trend</div></div>
-    <div class="card-body">
-      ${sentimentTotal === 0
-        ? `<div class="brief-empty">No sentiment data yet. Update sentiment after each session.</div>`
-        : `
-        <div class="sentiment-row">
-          <div class="sentiment-label">😊 Positive</div>
-          <div class="sentiment-bar"><div class="sentiment-fill-positive" style="width:${sentimentTotal > 0 ? Math.round(stats.positive/sentimentTotal*100) : 0}%"></div></div>
-          <div class="sentiment-count">${stats.positive}</div>
-        </div>
-        <div class="sentiment-row">
-          <div class="sentiment-label">😐 Neutral</div>
-          <div class="sentiment-bar"><div class="sentiment-fill-neutral" style="width:${sentimentTotal > 0 ? Math.round(stats.neutral/sentimentTotal*100) : 0}%"></div></div>
-          <div class="sentiment-count">${stats.neutral}</div>
-        </div>
-        <div class="sentiment-row">
-          <div class="sentiment-label">😟 Concerned</div>
-          <div class="sentiment-bar"><div class="sentiment-fill-concerned" style="width:${sentimentTotal > 0 ? Math.round(stats.concerned/sentimentTotal*100) : 0}%"></div></div>
-          <div class="sentiment-count">${stats.concerned}</div>
-        </div>
-      `}
-    </div>
-  </div>
-
-  ${doctorBreakdown.length > 0 ? `
-  <div class="card">
-    <div class="card-header"><div class="card-title">Per Doctor Breakdown</div></div>
-    <div style="padding:0;">
-      ${doctorBreakdown.map(d => `
-        <div class="patient-row" style="cursor:default;">
-          <div class="patient-avatar" style="background:var(--amber-light);color:var(--amber);">${initials(d.name)}</div>
-          <div class="patient-info">
-            <div class="patient-name">${d.name}</div>
-            <div class="patient-meta">${d.specialty || ''} · ${d.patientCount} patients</div>
-          </div>
-          <div class="patient-actions">
-            <span class="badge badge-teal">Retention: ${d.stats.retention !== null ? d.stats.retention + '%' : '—'}</span>
-            <span class="badge badge-gray">${d.stats.totalQueries} queries</span>
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  </div>
-  ` : ''}`;
+      ${c.preSummary?`
+      <div class="summary-box green">
+        <div class="section-label" style="margin-bottom:5px">Pre-visit summary from CCL</div>
+        ${c.preSummary}
+      </div>`:''}
+    </div>`;
+  }).join('')}`;
 }
 
-function renderTeam() {
-  return `
-  <div class="page-header">
-    <div class="page-title">Team</div>
-    <div class="page-subtitle">Manage CCL team access</div>
+// ── CASES (CCL) ────────────────────────────────────────
+function renderCases(){
+  return`
+  <div class="page-header-row">
+    <div><div class="page-title">Cases</div><div class="page-sub">${state.cases.length} active behavioral medicine cases</div></div>
+    <button class="btn btn-teal" data-action="add-case">+ New Case</button>
   </div>
   <div class="card">
-    <div class="card-header"><div class="card-title">Create Team Member Account</div></div>
-    <div class="card-body">
-      <p style="font-size:14px;color:var(--ink-soft);margin-bottom:20px;">
-        To add a team member, create their account in Firebase Authentication console, then add their user document in Firestore <code>users</code> collection with fields: <code>name</code>, <code>email</code>, <code>role: "ccl"</code>.
-      </p>
-      <div style="background:var(--surface);border-radius:10px;padding:16px;font-size:13px;color:var(--ink-soft);font-family:monospace;line-height:1.8;">
-        users / {uid} / {<br>
-        &nbsp;&nbsp;name: "Team Member Name",<br>
-        &nbsp;&nbsp;email: "member@ccllife.com",<br>
-        &nbsp;&nbsp;role: "ccl"<br>
-        }
-      </div>
-      <div class="divider"></div>
-      <div style="background:var(--surface);border-radius:10px;padding:16px;font-size:13px;color:var(--ink-soft);font-family:monospace;line-height:1.8;">
-        <strong>For doctors:</strong><br>
-        users / {uid} / {<br>
-        &nbsp;&nbsp;name: "Dr. Name",<br>
-        &nbsp;&nbsp;email: "doctor@clinic.com",<br>
-        &nbsp;&nbsp;role: "doctor",<br>
-        &nbsp;&nbsp;specialty: "Physician"<br>
-        }
-      </div>
+    ${state.cases.length===0?`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No cases yet</div><div class="empty-sub">Add your first behavioral medicine case to get started</div></div>`:
+    state.cases.map((c,i)=>{
+      const avg=avgComp(c.checkIns);
+      const trend=(c.checkIns||[]).map(ci=>ci.compliance);
+      const done=(c.behavioralTargets||[]).filter(t=>t.achieved).length;
+      return`<div class="case-row" data-action="open-case" data-id="${c.id}">
+        <div class="avatar" style="background:${COLORS[i%COLORS.length]}">${initials(c.name)}</div>
+        <div style="flex:1">
+          <div class="case-name">${c.name}${c.age?`, ${c.age}`:''}</div>
+          <div class="case-meta">${c.condition||'—'} · ${c.doctorName} · Week ${weeksSince(c.startDate)+1}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${trend.length>=2?sparklineSVG(trend,avg>=3.5?'#10b981':'#d97706'):''}
+          <span class="badge" style="background:#f3f4f6;color:#374151">${done}/${(c.behavioralTargets||[]).length} targets</span>
+          ${avg?`<span class="badge" style="background:${avg>=4?'#d1fae5':avg>=3?'#dbeafe':'#fef3c7'};color:${avg>=4?'#065f46':avg>=3?'#1e40af':'#92400e'}">${avg}/5</span>`:'<span class="badge" style="background:#f3f4f6;color:#9ca3af">No check-ins</span>'}
+          ${c.appointmentKept===true?'<span class="badge" style="background:#d1fae5;color:#065f46">Kept ✓</span>':''}
+          ${c.appointmentKept===false?'<span class="badge" style="background:#fee2e2;color:#c0392b">Missed</span>':''}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── DOCTORS (CCL) ──────────────────────────────────────
+function renderDoctors(){
+  return`
+  <div class="page-header">
+    <div class="page-title">Referring Doctors</div>
+    <div class="page-sub">Partner physicians in the behavioral medicine network</div>
+  </div>
+  <div class="card">
+    ${state.doctors.length===0?`<div class="empty"><div class="empty-icon">🩺</div><div class="empty-title">No doctors yet</div><div class="empty-sub">Add doctors via Firebase Console → Authentication, then create their user document in Firestore with role: "doctor"</div></div>`:
+    state.doctors.map((d,i)=>{
+      const dCases=state.cases.filter(c=>c.doctorId===d.id);
+      const dWithCI=dCases.filter(c=>c.checkIns?.length);
+      const dAvg=dWithCI.length?Math.round(dWithCI.reduce((s,c)=>s+avgComp(c.checkIns),0)/dWithCI.length*20):null;
+      return`<div class="case-row" style="cursor:default">
+        <div class="avatar" style="background:${COLORS[i%COLORS.length]}">${initials(d.name)}</div>
+        <div style="flex:1">
+          <div class="case-name">${d.name}</div>
+          <div class="case-meta">${d.specialty||'—'} · ${d.email}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <span class="badge" style="background:#dbeafe;color:#1e40af">${dCases.length} cases</span>
+          ${dAvg!==null?`<span class="badge" style="background:#d1fae5;color:#065f46">${dAvg}% adherence</span>`:''}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="card" style="padding:20px">
+    <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:8px">How to add a doctor</div>
+    <div style="font-size:12px;color:var(--ink-soft);line-height:1.8">
+      1. Firebase Console → Authentication → Add user (their email + a password)<br>
+      2. Copy their UID<br>
+      3. Firestore → users collection → Add document with their UID<br>
+      4. Fields: <code>name</code>, <code>email</code>, <code>role: "doctor"</code>, <code>specialty</code><br>
+      5. Share the Presense URL + credentials with them
     </div>
   </div>`;
+}
+
+// ── ANALYTICS ─────────────────────────────────────────
+function renderAnalytics(){
+  const cases=state.cases;
+  const isDoctor=state.profile?.role==='doctor';
+  if(!cases.length)return`<div class="page-header"><div class="page-title">Outcomes</div></div><div class="card"><div class="empty"><div class="empty-icon">📊</div><div class="empty-title">No data yet</div><div class="empty-sub">Outcomes will appear once check-ins are logged</div></div></div>`;
+
+  const withCI=cases.filter(c=>c.checkIns?.length);
+  const avgAll=withCI.length?+(withCI.reduce((s,c)=>s+avgComp(c.checkIns),0)/withCI.length*20).toFixed(0):0;
+  const totalTargets=cases.reduce((s,c)=>s+(c.behavioralTargets||[]).length,0);
+  const doneTargets=cases.reduce((s,c)=>s+(c.behavioralTargets||[]).filter(t=>t.achieved).length,0);
+  const kept=cases.filter(c=>c.appointmentKept===true).length;
+  const tracked=cases.filter(c=>c.appointmentKept!==null).length;
+
+  return`
+  <div class="page-header">
+    <div class="page-title">Outcomes</div>
+    <div class="page-sub">${isDoctor?'Your patients\' behavioral progress':'Evidence of behavioral change across all cases'}</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card" style="border-left-color:#10b981">
+      <div class="stat-label">Overall Adherence</div>
+      <div class="stat-val" style="color:#10b981">${avgAll}%</div>
+      <div class="stat-sub">avg behavioral compliance</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#1a6b5c">
+      <div class="stat-label">Targets Achieved</div>
+      <div class="stat-val" style="color:#1a6b5c">${doneTargets}<span style="font-size:18px;color:var(--ink-muted)">/${totalTargets}</span></div>
+      <div class="stat-sub">behavioral targets</div>
+    </div>
+    <div class="stat-card" style="border-left-color:#b45309">
+      <div class="stat-label">Appointment Retention</div>
+      <div class="stat-val" style="color:#b45309">${tracked?Math.round(kept/tracked*100):0}%</div>
+      <div class="stat-sub">${kept}/${tracked} tracked</div>
+    </div>
+  </div>
+  ${cases.map((c,i)=>{
+    const avg=avgComp(c.checkIns);
+    const trend=(c.checkIns||[]).map(ci=>ci.compliance);
+    const done=(c.behavioralTargets||[]).filter(t=>t.achieved).length;
+    const total=(c.behavioralTargets||[]).length;
+    const improvements=c.improvements||[];
+    return`
+    <div class="card">
+      <div class="card-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar" style="background:${COLORS[i%COLORS.length]};width:34px;height:34px;font-size:12px">${initials(c.name)}</div>
+          <div>
+            <div style="font-size:14px;font-weight:500;color:var(--ink)">${c.name}</div>
+            <div style="font-size:11px;color:var(--ink-muted)">${c.condition||'—'} · ${c.doctorName} · Week ${weeksSince(c.startDate)+1}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${trend.length>=2?sparklineSVG(trend,avg>=3.5?'#10b981':'#d97706'):''}
+          ${avg?`<span style="font-size:20px;font-weight:600;color:${compColor(avg)}">${avg}<span style="font-size:12px;color:var(--ink-muted)">/5</span></span>`:''}
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:${c.preSummary||improvements.length?'16px':'0'}">
+          <div>
+            <div class="section-label">Behavioral targets (${done}/${total})</div>
+            <div class="progress-wrap"><div class="progress-fill" style="width:${total?Math.round(done/total*100):0}%;background:${done===total&&total>0?'#10b981':'#1a6b5c'}"></div></div>
+            <div style="margin-top:10px">${(c.behavioralTargets||[]).map(t=>`<div style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0"><span style="color:${t.achieved?'#10b981':'#d1d5db'}">${t.achieved?'✓':'○'}</span><span style="color:${t.achieved?'var(--ink)':'var(--ink-muted)'}">${t.label}</span></div>`).join('')||'<div style="font-size:12px;color:var(--ink-muted)">None set</div>'}</div>
+          </div>
+          <div>
+            <div class="section-label">Clinical improvements noted</div>
+            ${improvements.length?improvements.map(imp=>`<div class="improvement-item"><span style="font-size:18px">↑</span><div><div style="font-size:12px;font-weight:500;color:var(--ink)">${imp.note}</div><div style="font-size:11px;color:var(--ink-muted)">${imp.date} · ${imp.attribution==='behavioral'?'Behavioral change':'Medication / combined'}</div></div></div>`).join(''):'<div style="font-size:12px;color:var(--ink-muted);padding:8px 0">None recorded yet</div>'}
+          </div>
+        </div>
+        ${c.preSummary?`<div class="summary-box green"><div class="section-label" style="margin-bottom:5px">Pre-visit summary</div>${c.preSummary}</div>`:''}
+      </div>
+    </div>`;
+  }).join('')}`;
+}
+
+// ── REPORTS ────────────────────────────────────────────
+function renderReports(){
+  if(!state.cases.length)return`<div class="page-header"><div class="page-title">Monthly Reports</div></div><div class="card"><div class="empty"><div class="empty-icon">📄</div><div class="empty-title">No cases yet</div><div class="empty-sub">Reports generate automatically once you have cases with check-ins</div></div></div>`;
+
+  return`
+  <div class="page-header">
+    <div class="page-title">Monthly Reports</div>
+    <div class="page-sub">One-month progress summary — share with referring doctors or patients</div>
+  </div>
+  ${state.cases.map((c,i)=>{
+    const checkIns=c.checkIns||[];
+    const targets=c.behavioralTargets||[];
+    const improvements=c.improvements||[];
+    const avg=avgComp(checkIns);
+    const done=targets.filter(t=>t.achieved).length;
+    return`
+    <div class="report-page" id="report-${c.id}">
+      <div class="report-header">
+        <div>
+          <div class="report-title">${c.name}</div>
+          <div class="report-sub">${c.condition||'—'} · Referring: ${c.doctorName} · Program start: ${c.startDate||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Lora',serif;font-size:28px;font-weight:400;color:${avg?compColor(avg):'var(--ink-muted)'}">${avg||'—'}<span style="font-size:14px;color:var(--ink-muted)">/5</span></div>
+          <div style="font-size:10px;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.5px">Avg adherence</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div>
+          <div class="section-label">Behavioral targets</div>
+          ${targets.map(t=>`<div style="display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:1px solid var(--border-light);font-size:12px"><span style="color:${t.achieved?'#10b981':'#d1d5db'};font-size:14px">${t.achieved?'✓':'○'}</span><span style="color:${t.achieved?'var(--ink)':'var(--ink-muted)'}">${t.label}</span></div>`).join('')||'<div style="font-size:12px;color:var(--ink-muted)">None set</div>'}
+          <div style="margin-top:8px;font-size:12px;color:var(--ink-soft);font-weight:500">${done}/${targets.length} achieved</div>
+        </div>
+        <div>
+          <div class="section-label">Clinical improvements</div>
+          ${improvements.length?improvements.map(imp=>`<div style="padding:6px 0;border-bottom:1px solid var(--border-light)"><div style="font-size:12px;font-weight:500;color:var(--ink)">${imp.note}</div><div style="font-size:11px;color:var(--ink-muted)">${imp.date} · ${imp.attribution==='behavioral'?'Attributed to behavioral change':'Medication / combined'}</div></div>`).join(''):'<div style="font-size:12px;color:var(--ink-muted)">None recorded</div>'}
+        </div>
+      </div>
+
+      ${checkIns.length?`
+      <div class="section-label">Week-by-week compliance</div>
+      <div style="margin-bottom:16px">
+        <div class="week-row" style="font-weight:600;color:var(--ink-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.4px"><div>Date</div><div>Summary</div><div>Score</div><div>Barrier</div></div>
+        ${checkIns.map(ci=>`<div class="week-row">
+          <div style="font-size:11px;color:var(--ink-muted)">${ci.date}</div>
+          <div style="font-size:12px;color:var(--ink-soft)">${ci.summary.slice(0,80)}${ci.summary.length>80?'…':''}</div>
+          <div><span style="font-size:13px;font-weight:600;color:${compColor(ci.compliance)}">${ci.compliance}/5</span></div>
+          <div style="font-size:11px;color:var(--amber)">${ci.barriers||'—'}</div>
+        </div>`).join('')}
+      </div>`:''}
+
+      ${c.preSummary?`
+      <div class="summary-box" style="margin-top:4px">
+        <div class="section-label" style="margin-bottom:5px">CCL summary for next visit</div>
+        ${c.preSummary}
+      </div>`:''}
+
+      <div style="margin-top:20px;font-size:11px;color:var(--ink-muted);border-top:1px solid var(--border);padding-top:12px">Generated by Presense — CCL Behavioral Medicine Platform · ${new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})}</div>
+    </div>`;
+  }).join('')}`;
 }
 
 // ── MODALS ─────────────────────────────────────────────
-function renderModal() {
-  const m = state.modal;
-
-  if (m.type === 'view-patient') {
-    const p = m.patient;
-    const isDoctor = state.userProfile?.role === 'doctor';
-    const hasBrief = !!p.brief;
-
-    return `
-    <div class="modal-overlay" id="modal-overlay">
-      <div class="modal">
-        <div class="modal-header">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div class="patient-avatar" style="width:42px;height:42px;font-size:16px;">${initials(p.name)}</div>
-            <div>
-              <div class="modal-title">${p.name}</div>
-              <div style="font-size:13px;color:var(--ink-muted);">${p.condition || 'No condition noted'} · Age ${p.age || '—'}</div>
-            </div>
-          </div>
-          <button class="modal-close" data-action="close-modal">×</button>
-        </div>
-        <div class="modal-body">
-          ${isDoctor ? renderDoctorBriefView(p) : renderCCLPatientView(p)}
-        </div>
-      </div>
-    </div>`;
-  }
-
-  if (m.type === 'add-patient') {
-    const doctors = state.doctors;
-    return `
-    <div class="modal-overlay" id="modal-overlay">
-      <div class="modal">
-        <div class="modal-header">
-          <div class="modal-title">Add New Patient</div>
-          <button class="modal-close" data-action="close-modal">×</button>
-        </div>
-        <div class="modal-body">
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Patient Name *</label>
-              <input class="form-input" id="pf-name" placeholder="Full name" value="${state.patientForm.name}" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Age</label>
-              <input class="form-input" id="pf-age" placeholder="e.g. 34" type="number" value="${state.patientForm.age}" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Condition / Presenting Issue</label>
-            <input class="form-input" id="pf-condition" placeholder="e.g. Anxiety, PCOS, Hypertension" value="${state.patientForm.condition}" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Assigned Doctor *</label>
-            <select class="form-select" id="pf-doctor">
-              <option value="">Select doctor…</option>
-              ${doctors.map(d => `<option value="${d.id}" ${state.patientForm.doctorId === d.id ? 'selected' : ''}>${d.name} (${d.specialty || ''})</option>`).join('')}
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Next Appointment Date</label>
-            <input class="form-input" id="pf-date" type="date" value="${state.patientForm.nextAppointment}" />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-outline" data-action="close-modal">Cancel</button>
-          <button class="btn-teal" id="save-patient-btn">Add Patient</button>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  if (m.type === 'add-doctor') {
-    return `
-    <div class="modal-overlay" id="modal-overlay">
-      <div class="modal">
-        <div class="modal-header">
-          <div class="modal-title">Add Doctor</div>
-          <button class="modal-close" data-action="close-modal">×</button>
-        </div>
-        <div class="modal-body">
-          <p style="font-size:13px;color:var(--ink-muted);margin-bottom:20px;">This will create an invite. Ask the doctor to sign up with this email — then update their Firestore user document with role: "doctor".</p>
-          <div class="form-group">
-            <label class="form-label">Doctor Name</label>
-            <input class="form-input" id="df-name" placeholder="Dr. Full Name" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input class="form-input" id="df-email" type="email" placeholder="doctor@clinic.com" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Specialty</label>
-            <input class="form-input" id="df-specialty" placeholder="e.g. Physician, Gynaecologist" />
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-outline" data-action="close-modal">Cancel</button>
-          <button class="btn-teal" id="save-doctor-btn">Create Invite</button>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  return '';
+function renderModal(){
+  if(state.modal==='add-case')return renderAddCaseModal();
+  if(state.modal==='view')return renderViewModal();
+  return'';
 }
 
-function renderDoctorBriefView(p) {
-  const b = p.brief;
-  if (!b) return `
-    <div class="empty-state">
-      <div class="empty-icon">📋</div>
-      <div class="empty-title">Brief not ready yet</div>
-      <div class="empty-sub">CCL team will update this before your next session.</div>
-    </div>`;
-
-  return `
-  <div class="brief-section">
-    <div class="brief-section-label">What's on their mind</div>
-    <div class="brief-content">${b.mindState || '—'}</div>
-  </div>
-  <div class="brief-section">
-    <div class="brief-section-label">Suggested framing for this visit</div>
-    <div class="brief-content">${b.suggestedFraming || '—'}</div>
-  </div>
-  ${b.flag ? `
-  <div class="brief-section">
-    <div class="brief-section-label">⚠️ Flag from CCL</div>
-    <div class="brief-content ${b.flagLevel === 'high' ? 'red-flag' : 'flag'}">${b.flag}</div>
-  </div>
-  ` : ''}
-  <div style="font-size:12px;color:var(--ink-muted);margin-top:16px;">
-    Last updated: ${p.briefUpdatedAt ? formatDate(p.briefUpdatedAt) : '—'}
+function renderAddCaseModal(){
+  const f=state.forms.addCase;
+  const pathways=['Cardiovascular','Metabolic / Lifestyle','Gastrointestinal','Women\'s Health','Neurology','Respiratory','Pain / Rehabilitation','Oncology','Surgical','Dermatology','Urology','Disability / Adjustment'];
+  return`<div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header"><div class="modal-title">New Case</div><button class="modal-close" data-action="close-modal">×</button></div>
+      <div class="modal-body">
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Patient name *</label><input class="form-input" id="nc-name" value="${f.name}" placeholder="Full name"/></div>
+          <div class="form-group"><label class="form-label">Age</label><input class="form-input" id="nc-age" type="number" value="${f.age}" placeholder="e.g. 34"/></div>
+        </div>
+        <div class="form-group"><label class="form-label">Condition</label><input class="form-input" id="nc-condition" value="${f.condition}" placeholder="e.g. PCOS, Hypertension, IBS"/></div>
+        <div class="form-group"><label class="form-label">Clinical pathway</label>
+          <select class="form-select" id="nc-pathway">
+            <option value="">Select pathway…</option>
+            ${pathways.map(p=>`<option value="${p}"${f.pathway===p?' selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Referring doctor *</label>
+          <select class="form-select" id="nc-doctor">
+            <option value="">Select doctor…</option>
+            ${state.doctors.map(d=>`<option value="${d.id}"${f.doctorId===d.id?' selected':''}>${d.name} — ${d.specialty||''}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Next appointment</label><input class="form-input" id="nc-date" type="date" value="${f.nextAppointment}"/></div>
+        <div class="form-group"><label class="form-label">Medical recommendations from doctor</label><textarea class="form-textarea" id="nc-recs" placeholder="What has the doctor advised — diet, exercise, medication, follow-up, lifestyle changes…">${f.medicalRecs}</textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-action="close-modal">Cancel</button>
+        <button class="btn btn-teal" id="save-case-btn">Add Case</button>
+      </div>
+    </div>
   </div>`;
 }
 
-function renderCCLPatientView(p) {
-  const b = p.brief || {};
-  return `
-  <div class="tabs">
-    <button class="tab active" id="tab-brief">Pre-Visit Brief</button>
-    <button class="tab" id="tab-status">Session Status</button>
-  </div>
-  <div id="panel-brief">
-    <div class="form-group">
-      <label class="form-label">What's on their mind</label>
-      <textarea class="form-textarea" id="bf-mind" placeholder="Psychological state, key concerns, what the patient has been expressing…">${b.mindState || ''}</textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Suggested framing for doctor</label>
-      <textarea class="form-textarea" id="bf-framing" placeholder="How the doctor should approach this visit. Keep it practical and clear…">${b.suggestedFraming || ''}</textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Flag (leave blank if none)</label>
-      <input class="form-input" id="bf-flag" placeholder="e.g. Patient anxious about new medication, needs reassurance" value="${b.flag || ''}" />
-    </div>
-    <div class="form-group">
-      <label class="form-label">Flag Level</label>
-      <select class="form-select" id="bf-flag-level">
-        <option value="none" ${(b.flagLevel||'none') === 'none' ? 'selected' : ''}>No flag</option>
-        <option value="low" ${b.flagLevel === 'low' ? 'selected' : ''}>Low — FYI</option>
-        <option value="high" ${b.flagLevel === 'high' ? 'selected' : ''}>High — Needs attention</option>
-      </select>
-    </div>
-    <button class="btn-teal" id="save-brief-btn" data-patient-id="${p.id}">Save Brief</button>
-  </div>
-  <div id="panel-status" style="display:none;">
-    <div class="form-group">
-      <label class="form-label">Appointment Status</label>
-      <div style="display:flex;gap:10px;margin-top:4px;">
-        <button class="btn-teal ${p.appointmentKept === true ? '' : 'btn-outline'}" data-action="mark-kept" data-id="${p.id}">✓ Attended</button>
-        <button class="btn-outline ${p.appointmentKept === false ? '' : ''}" data-action="mark-missed" data-id="${p.id}" style="${p.appointmentKept === false ? 'border-color:var(--red);color:var(--red)' : ''}">✗ Missed</button>
+function renderViewModal(){
+  const c=state.modalData;
+  if(!c)return'';
+  const isDoctor=state.profile?.role==='doctor';
+  const avg=avgComp(c.checkIns);
+  const ci=state.activeTab;
+
+  return`<div class="modal-overlay" id="modal-overlay">
+    <div class="modal" style="max-width:660px">
+      <div class="modal-header">
+        <div style="display:flex;align-items:center;gap:11px">
+          <div class="avatar" style="background:${COLORS[state.cases.indexOf(state.cases.find(x=>x.id===c.id))%COLORS.length]}">${initials(c.name)}</div>
+          <div>
+            <div class="modal-title">${c.name}${c.age?`, ${c.age}`:''}</div>
+            <div style="font-size:12px;color:var(--ink-muted)">${c.condition||'—'} · ${c.doctorName}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${avg?`<span style="font-size:16px;font-weight:600;color:${compColor(avg)}">${avg}/5</span>`:''}
+          <button class="modal-close" data-action="close-modal">×</button>
+        </div>
       </div>
-      ${p.appointmentKept !== null ? `<div style="font-size:12px;color:var(--ink-muted);margin-top:8px;">Last recorded: ${p.appointmentKept ? 'Attended ✓' : 'Missed ✗'}</div>` : ''}
+      <div style="padding:0 24px">
+        <div style="padding-top:16px">
+          <div class="tabs">
+            ${isDoctor
+              ?`<button class="tab${ci==='careplan'?' active':''}" data-tab="careplan">Care Plan</button>
+                 <button class="tab${ci==='summary'?' active':''}" data-tab="summary">Pre-visit Summary</button>`
+              :`<button class="tab${ci==='careplan'?' active':''}" data-tab="careplan">Care Plan</button>
+                 <button class="tab${ci==='checkins'?' active':''}" data-tab="checkins">Check-ins (${(c.checkIns||[]).length})</button>
+                 <button class="tab${ci==='improvements'?' active':''}" data-tab="improvements">Improvements</button>
+                 <button class="tab${ci==='summary'?' active':''}" data-tab="summary">Pre-visit Summary</button>`}
+          </div>
+        </div>
+        ${renderModalTab(c,isDoctor)}
+      </div>
     </div>
-    <div class="divider"></div>
-    <div class="form-group">
-      <label class="form-label">Patient Sentiment</label>
-      <select class="form-select" id="sentiment-select">
-        <option value="">Select…</option>
-        <option value="positive" ${p.sentiment === 'positive' ? 'selected' : ''}>😊 Positive</option>
-        <option value="neutral" ${p.sentiment === 'neutral' ? 'selected' : ''}>😐 Neutral</option>
-        <option value="concerned" ${p.sentiment === 'concerned' ? 'selected' : ''}>😟 Concerned</option>
-      </select>
-      <button class="btn-teal btn-sm" style="margin-top:8px;" data-action="save-sentiment" data-id="${p.id}">Update</button>
-    </div>
-    <div class="divider"></div>
-    <div class="form-group">
-      <label class="form-label">Log Query Handled</label>
-      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:10px;">Total queries handled for this patient: <strong>${p.queriesHandled || 0}</strong></div>
-      <button class="btn-outline btn-sm" data-action="log-query" data-id="${p.id}">+ Log 1 Query</button>
+  </div>`;
+}
+
+function renderModalTab(c,isDoctor){
+  const tab=state.activeTab;
+  const f=state.forms;
+
+  if(tab==='careplan'){
+    return`<div style="padding-bottom:24px">
+      <div class="form-group">
+        <div class="form-label">Medical recommendations</div>
+        <div class="summary-box">${c.medicalRecs||'Not recorded'}</div>
+      </div>
+      <div class="divider"></div>
+      <div class="form-label">Behavioral targets</div>
+      <div style="margin-bottom:${isDoctor?'0':'14px'}">
+        ${(c.behavioralTargets||[]).length===0?'<div style="font-size:13px;color:var(--ink-muted);font-style:italic;padding:8px 0">No targets set yet</div>':''}
+        ${(c.behavioralTargets||[]).map(t=>`
+        <div class="check-item">
+          ${!isDoctor?`<div class="check-box${t.achieved?' done':''}" data-action="toggle-target" data-case="${c.id}" data-target="${t.id}">${t.achieved?'<span style="color:white;font-size:10px">✓</span>':''}</div>`:'<span style="color:'+(t.achieved?'#10b981':'#d1d5db')+';font-size:15px">'+(t.achieved?'✓':'○')+'</span>'}
+          <span style="font-size:13px;color:${t.achieved?'var(--ink)':'var(--ink-muted)'}">${t.label}</span>
+        </div>`).join('')}
+      </div>
+      ${!isDoctor?`
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input class="form-input" id="new-target-input" value="${f.addTarget.label}" placeholder="Add behavioral target…" style="flex:1"/>
+        <button class="btn btn-ghost" data-action="add-target" data-case="${c.id}">Add</button>
+      </div>
+      <div class="divider"></div>
+      <div class="form-label">Appointment status</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline${c.appointmentKept===true?' btn-teal':''}" data-action="mark-kept" data-case="${c.id}">✓ Attended</button>
+        <button class="btn btn-outline" style="${c.appointmentKept===false?'border-color:#c0392b;color:#c0392b':''}" data-action="mark-missed" data-case="${c.id}">✗ Missed</button>
+      </div>`:''}
+    </div>`;
+  }
+
+  if(tab==='checkins'){
+    return`<div style="padding-bottom:24px">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <button class="btn btn-teal" data-action="open-checkin" data-case="${c.id}">+ Log Check-in</button>
+      </div>
+      ${(c.checkIns||[]).length===0?'<div style="text-align:center;padding:32px;color:var(--ink-muted);font-size:13px">No check-ins yet. Log the first one.</div>':''}
+      ${[...(c.checkIns||[])].reverse().map(ci=>`
+      <div class="checkin-card" style="border-left-color:${compColor(ci.compliance)}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:600;color:var(--ink)">${ci.date}</div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="width:8px;height:8px;border-radius:50%;background:${compColor(ci.compliance)}"></div>
+            <span style="font-size:13px;font-weight:600;color:${compColor(ci.compliance)}">${ci.compliance}/5</span>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:${ci.barriers||ci.clinicalNote?'8px':'0'}">${ci.summary}</div>
+        ${ci.barriers?`<div style="font-size:11px;background:var(--amber-light);color:var(--amber);border-radius:5px;padding:3px 8px;display:inline-block;margin-right:6px">Barrier: ${ci.barriers}</div>`:''}
+        ${ci.clinicalNote?`<div style="font-size:11px;background:var(--green-light);color:var(--green);border-radius:5px;padding:3px 8px;display:inline-block">Clinical: ${ci.clinicalNote}</div>`:''}
+      </div>`).join('')}
+    </div>`;
+  }
+
+  if(tab==='improvements'){
+    return`<div style="padding-bottom:24px">
+      <div style="font-size:13px;color:var(--ink-muted);margin-bottom:16px;line-height:1.6">Log clinical improvements reported by the doctor or patient — BP normalised, weight loss, HbA1c improved, sleep better. This is what makes the value of CCL visible to the doctor.</div>
+      <div class="form-group"><label class="form-label">What improved?</label><input class="form-input" id="imp-note" value="${f.addImprovement.note}" placeholder="e.g. BP readings normalised, Lost 2kg, HbA1c improved from 8.2 to 7.1"/></div>
+      <div class="form-group"><label class="form-label">Attributed to</label>
+        <select class="form-select" id="imp-attr">
+          <option value="behavioral"${f.addImprovement.attribution==='behavioral'?' selected':''}>Behavioral change (CCL intervention)</option>
+          <option value="medication"${f.addImprovement.attribution==='medication'?' selected':''}>Medication change</option>
+          <option value="combined"${f.addImprovement.attribution==='combined'?' selected':''}>Combined — behavior + medication</option>
+        </select>
+      </div>
+      <button class="btn btn-teal" data-action="save-improvement" data-case="${c.id}">Log Improvement</button>
+      ${(c.improvements||[]).length?`
+      <div class="divider"></div>
+      <div class="form-label">Improvement history</div>
+      ${[...(c.improvements||[])].reverse().map(imp=>`
+      <div class="improvement-item">
+        <span style="font-size:20px;color:#10b981">↑</span>
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--ink)">${imp.note}</div>
+          <div style="font-size:11px;color:var(--ink-muted)">${imp.date} · ${imp.attribution==='behavioral'?'Behavioral change':imp.attribution==='medication'?'Medication':'Combined'}</div>
+        </div>
+      </div>`).join('')}`:''}
+    </div>`;
+  }
+
+  if(tab==='summary'){
+    return`<div style="padding-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;color:var(--ink-muted)">Write or auto-draft a summary for Dr. ${c.doctorName?.replace('Dr. ','')||'the doctor'} before the next visit</div>
+        <button class="btn btn-ghost btn-sm" data-action="auto-draft" data-case="${c.id}">✦ Draft from check-ins</button>
+      </div>
+      <div class="form-group"><textarea class="form-textarea" id="summary-textarea" rows="7" placeholder="Summarise what's improved, what barriers remain, what the doctor should focus on in the next consult…">${f.editSummary}</textarea></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-teal" data-action="save-summary" data-case="${c.id}">Save Summary</button>
+      </div>
+      ${c.preSummary?`<div class="divider"></div><div class="form-label">Saved summary</div><div class="summary-box green">${c.preSummary}</div>`:''}
+    </div>`;
+  }
+  return'';
+}
+
+// ── CHECKIN MODAL ──────────────────────────────────────
+function renderCheckinModal(caseId){
+  const c=state.cases.find(x=>x.id===caseId);
+  const f=state.forms.addCheckin;
+  return`<div class="modal-overlay" id="modal-overlay">
+    <div class="modal" style="max-width:500px">
+      <div class="modal-header"><div class="modal-title">Log Check-in — ${c?.name}</div><button class="modal-close" data-action="back-to-view">×</button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">What happened this week?</label><textarea class="form-textarea" id="ci-summary" rows="4" placeholder="How is the patient doing? What's working, what's changing, engagement level…">${f.summary}</textarea></div>
+        <div class="form-group">
+          <label class="form-label">Compliance rating</label>
+          <div style="display:flex;gap:8px;margin-top:4px;align-items:center">
+            ${[1,2,3,4,5].map(n=>`<button data-action="set-compliance" data-val="${n}" style="width:38px;height:38px;border-radius:8px;border:2px solid ${f.compliance===n?compColor(n):'var(--border)'};background:${f.compliance===n?compColor(n):'var(--white)'};color:${f.compliance===n?'white':'var(--ink-soft)'};font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">${n}</button>`).join('')}
+            <span style="font-size:12px;color:var(--ink-muted);margin-left:4px">${['','Very poor','Poor','Moderate','Good','Excellent'][f.compliance]}</span>
+          </div>
+        </div>
+        <div class="form-group"><label class="form-label">Barriers identified</label><input class="form-input" id="ci-barriers" value="${f.barriers}" placeholder="What's getting in the way? e.g. work stress, social eating, forgetfulness…"/></div>
+        <div class="form-group"><label class="form-label">Clinical change noted by patient (optional)</label><input class="form-input" id="ci-clinical" value="${f.clinicalNote}" placeholder="e.g. BP readings better this week, less bloating, energy improved…"/></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" data-action="back-to-view">Cancel</button>
+        <button class="btn btn-teal" data-action="save-checkin" data-case="${caseId}">Save Check-in</button>
+      </div>
     </div>
   </div>`;
 }
 
 // ── EVENT HANDLERS ─────────────────────────────────────
-function attachAppHandlers() {
-  // Nav
-  document.querySelectorAll('[data-page]').forEach(el => {
-    el.addEventListener('click', () => setState({ page: el.dataset.page }));
-  });
+function attachAppHandlers(){
+  document.querySelectorAll('[data-page]').forEach(el=>el.addEventListener('click',()=>set({page:el.dataset.page})));
+  document.getElementById('signout-btn')?.addEventListener('click',doSignOut);
+  document.getElementById('modal-overlay')?.addEventListener('click',e=>{if(e.target.id==='modal-overlay')set({modal:null})});
 
-  // Sign out
-  document.getElementById('signout-btn')?.addEventListener('click', handleSignOut);
+  document.querySelectorAll('[data-tab]').forEach(el=>el.addEventListener('click',()=>{
+    set({activeTab:el.dataset.tab,forms:{...state.forms,editSummary:state.modalData?.preSummary||''}});
+  }));
 
-  // Modal triggers
-  document.querySelectorAll('[data-action]').forEach(el => {
-    el.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const action = el.dataset.action;
+  document.querySelectorAll('[data-action]').forEach(el=>el.addEventListener('click',async e=>{
+    e.stopPropagation();
+    const a=el.dataset.action;
+    const id=el.dataset.id||el.dataset.case;
 
-      if (action === 'view-patient') {
-        const patient = state.patients.find(p => p.id === el.dataset.id);
-        if (patient) setState({ modal: { type: 'view-patient', patient } });
-      }
-      if (action === 'add-patient') setState({ modal: { type: 'add-patient' } });
-      if (action === 'add-doctor') setState({ modal: { type: 'add-doctor' } });
-      if (action === 'close-modal') setState({ modal: null });
-      if (action === 'mark-kept') { await markAppointment(el.dataset.id, true); setState({ modal: null }); }
-      if (action === 'mark-missed') { await markAppointment(el.dataset.id, false); setState({ modal: null }); }
-      if (action === 'log-query') { await incrementQuery(el.dataset.id); }
-      if (action === 'save-sentiment') {
-        const val = document.getElementById('sentiment-select')?.value;
-        if (val) { await updateSentiment(el.dataset.id, val); setState({ modal: null }); }
-      }
+    if(a==='open-case'){
+      const c=state.cases.find(x=>x.id===id);
+      if(c)set({modal:'view',modalData:c,activeTab:'careplan',forms:{...state.forms,editSummary:c.preSummary||''}});
+    }
+    if(a==='add-case')set({modal:'add-case'});
+    if(a==='close-modal')set({modal:null});
+    if(a==='back-to-view'){
+      const c=state.cases.find(x=>x.id===id)||state.modalData;
+      set({modal:'view',modalData:c});
+    }
+    if(a==='toggle-target')await toggleTarget(el.dataset.case,el.dataset.target);
+    if(a==='add-target'){
+      setForm('addTarget',{label:document.getElementById('new-target-input')?.value||''});
+      await addTarget(id);
+    }
+    if(a==='mark-kept')await markAppointment(id,true);
+    if(a==='mark-missed')await markAppointment(id,false);
+    if(a==='open-checkin'){
+      const c=state.cases.find(x=>x.id===id)||state.modalData;
+      document.getElementById('root').querySelector('.modal').outerHTML=renderCheckinModal(id);
+      set({modal:'checkin-'+id,modalData:c});
+    }
+    if(a==='set-compliance'){
+      setForm('addCheckin',{compliance:parseInt(el.dataset.val)});
+    }
+    if(a==='save-checkin'){
+      setForm('addCheckin',{
+        summary:document.getElementById('ci-summary')?.value||'',
+        barriers:document.getElementById('ci-barriers')?.value||'',
+        clinicalNote:document.getElementById('ci-clinical')?.value||''
+      });
+      await addCheckin(id);
+    }
+    if(a==='save-improvement'){
+      setForm('addImprovement',{
+        note:document.getElementById('imp-note')?.value||'',
+        attribution:document.getElementById('imp-attr')?.value||'behavioral'
+      });
+      await addImprovement(id);
+    }
+    if(a==='auto-draft'){
+      const c=state.cases.find(x=>x.id===id)||state.modalData;
+      const draft=draftSummary(c);
+      setForm('editSummary',draft);
+      const ta=document.getElementById('summary-textarea');
+      if(ta)ta.value=draft;
+      showToast('Draft generated from check-ins');
+    }
+    if(a==='save-summary'){
+      setForm('editSummary',document.getElementById('summary-textarea')?.value||'');
+      await saveSummary(id);
+    }
+  }));
+
+  // Add case form handlers
+  document.getElementById('save-case-btn')?.addEventListener('click',async()=>{
+    setForm('addCase',{
+      name:document.getElementById('nc-name')?.value||'',
+      age:document.getElementById('nc-age')?.value||'',
+      condition:document.getElementById('nc-condition')?.value||'',
+      pathway:document.getElementById('nc-pathway')?.value||'',
+      doctorId:document.getElementById('nc-doctor')?.value||'',
+      nextAppointment:document.getElementById('nc-date')?.value||'',
+      medicalRecs:document.getElementById('nc-recs')?.value||''
     });
-  });
-
-  // Modal overlay click to close
-  document.getElementById('modal-overlay')?.addEventListener('click', (e) => {
-    if (e.target.id === 'modal-overlay') setState({ modal: null });
-  });
-
-  // Tabs in modal
-  document.getElementById('tab-brief')?.addEventListener('click', () => {
-    document.getElementById('tab-brief').classList.add('active');
-    document.getElementById('tab-status').classList.remove('active');
-    document.getElementById('panel-brief').style.display = '';
-    document.getElementById('panel-status').style.display = 'none';
-  });
-  document.getElementById('tab-status')?.addEventListener('click', () => {
-    document.getElementById('tab-status').classList.add('active');
-    document.getElementById('tab-brief').classList.remove('active');
-    document.getElementById('panel-status').style.display = '';
-    document.getElementById('panel-brief').style.display = 'none';
-  });
-
-  // Save brief
-  document.getElementById('save-brief-btn')?.addEventListener('click', async (e) => {
-    const patientId = e.target.dataset.patientId;
-    const brief = {
-      mindState: document.getElementById('bf-mind').value,
-      suggestedFraming: document.getElementById('bf-framing').value,
-      flag: document.getElementById('bf-flag').value,
-      flagLevel: document.getElementById('bf-flag-level').value,
-    };
-    await saveBrief(patientId, brief);
-    setState({ modal: null });
-  });
-
-  // Save patient
-  document.getElementById('save-patient-btn')?.addEventListener('click', async () => {
-    const name = document.getElementById('pf-name').value.trim();
-    const doctorId = document.getElementById('pf-doctor').value;
-    if (!name || !doctorId) { alert('Patient name and doctor are required.'); return; }
-    await addPatient({
-      name,
-      age: document.getElementById('pf-age').value,
-      condition: document.getElementById('pf-condition').value,
-      doctorId,
-      nextAppointment: document.getElementById('pf-date').value,
-    });
-    setState({ modal: null, patientForm: { name: '', age: '', condition: '', doctorId: '', nextAppointment: '' } });
-  });
-
-  // Save doctor
-  document.getElementById('save-doctor-btn')?.addEventListener('click', async () => {
-    const name = document.getElementById('df-name').value.trim();
-    const email = document.getElementById('df-email').value.trim();
-    if (!name || !email) { alert('Name and email are required.'); return; }
-    await createDoctorAccount({
-      name,
-      email,
-      specialty: document.getElementById('df-specialty').value,
-    });
-    setState({ modal: null });
+    await createCase();
   });
 }
 
-// ── ICONS ──────────────────────────────────────────────
-const iconDashboard = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.5"/></svg>`;
-const iconPatients = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>`;
-const iconDoctors = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4m-2-2h4"/><circle cx="8" cy="10" r="4"/></svg>`;
-const iconAnalytics = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>`;
-const iconTeam = `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="5" r="2.5"/><circle cx="11" cy="5" r="2.5"/><path d="M1 14c0-2.2 1.8-4 4-4"/><path d="M10 14c0-2.2 1.8-4 4-4"/><path d="M7 14c0-2.2 1.8-4 4-4s4 1.8 4 4"/></svg>`;
-
-// Initial render
 render();
 </script>
 </body>
