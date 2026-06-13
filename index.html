@@ -246,17 +246,15 @@ async function getUserProfile(uid){
 
 async function loadCases(){
   try{
-    let q;
+    const s=await getDocs(collection(db,'cases'));
+    const all=s.docs.map(d=>({id:d.id,...d.data()}));
     if(state.profile?.role==='doctor'){
-      q=query(collection(db,'cases'),where('doctorId','==',state.user.uid));
+      return all.filter(c=>c.doctorId===state.user.uid);
     }else{
-      q=query(collection(db,'cases'),where('createdBy','==',state.user.uid));
+      return all.filter(c=>c.createdBy===state.user.uid);
     }
-    const s=await getDocs(q);
-    return s.docs.map(d=>({id:d.id,...d.data()}));
-  }catch(e){console.error(e);return[]}
+  }catch(e){console.error('loadCases error:',e);return[]}
 }
-
 async function loadDoctors(){
   try{
     const q=query(collection(db,'users'),where('role','==','doctor'));
