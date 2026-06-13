@@ -240,8 +240,12 @@ function showToast(msg){set({toast:msg});setTimeout(()=>set({toast:null}),3000)}
 
 // ── FIREBASE ───────────────────────────────────────────
 async function getUserProfile(uid){
-  try{const s=await getDoc(doc(db,'users',uid));return s.exists()?s.data():null}
-  catch(e){console.error(e);return null}
+  try{
+    const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('timeout')),5000));
+    const fetch=getDoc(doc(db,'users',uid));
+    const s=await Promise.race([fetch,timeout]);
+    return s.exists()?s.data():null;
+  }catch(e){console.error('getUserProfile error:',e);return null}
 }
 
 async function loadCases(){
@@ -272,10 +276,12 @@ onAuthStateChanged(auth,async(user)=>{
   if(user){
     try{
       const profile=await getUserProfile(user.uid);
+      const finalProfile=profile||{role:'ccl',name:user.email.split('@')[0]};
       const[cases,doctors]=await Promise.all([loadCases().catch(()=>[]),loadDoctors().catch(()=>[])]);
-      set({user,profile,loading:false,cases,doctors,page:'dashboard'});
+      set({user,profile:finalProfile,loading:false,cases,doctors,page:'dashboard'});
     }catch(e){
-      set({user,profile:{role:'ccl',name:user.email},loading:false,cases:[],doctors:[]});
+      console.error('Auth error:',e);
+      set({user,profile:{role:'ccl',name:user.email.split('@')[0]},loading:false,cases:[],doctors:[]});
     }
   }else{
     set({user:null,profile:null,loading:false,cases:[],doctors:[]});
