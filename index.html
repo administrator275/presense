@@ -854,6 +854,7 @@ function renderReports(){
 function renderModal(){
   if(state.modal==='add-case')return renderAddCaseModal();
   if(state.modal==='view')return renderViewModal();
+  if(state.modal==='checkin')return renderCheckinModal(state.modalData?.id);
   return'';
 }
 
@@ -1080,7 +1081,7 @@ function attachAppHandlers(){
     if(a==='close-modal')set({modal:null});
     if(a==='back-to-view'){
       const c=state.cases.find(x=>x.id===id)||state.modalData;
-      set({modal:'view',modalData:c});
+      set({modal:'view',modalData:c,activeTab:'checkins'});
     }
     if(a==='toggle-target')await toggleTarget(el.dataset.case,el.dataset.target);
     if(a==='add-target'){
@@ -1091,19 +1092,29 @@ function attachAppHandlers(){
     if(a==='mark-missed')await markAppointment(id,false);
     if(a==='open-checkin'){
       const c=state.cases.find(x=>x.id===id)||state.modalData;
-      document.getElementById('root').querySelector('.modal').outerHTML=renderCheckinModal(id);
-      set({modal:'checkin-'+id,modalData:c});
+      set({modal:'checkin',modalData:c,forms:{...state.forms,addCheckin:{summary:'',compliance:3,barriers:'',clinicalNote:''}}});
     }
     if(a==='set-compliance'){
       setForm('addCheckin',{compliance:parseInt(el.dataset.val)});
     }
     if(a==='save-checkin'){
-      setForm('addCheckin',{
-        summary:document.getElementById('ci-summary')?.value||'',
-        barriers:document.getElementById('ci-barriers')?.value||'',
-        clinicalNote:document.getElementById('ci-clinical')?.value||''
-      });
-      await addCheckin(id);
+      const caseId=id||state.modalData?.id;
+      const summary=document.getElementById('ci-summary')?.value||'';
+      const barriers=document.getElementById('ci-barriers')?.value||'';
+      const clinicalNote=document.getElementById('ci-clinical')?.value||'';
+      if(!summary)return;
+      const c=state.cases.find(x=>x.id===caseId);
+      const checkIns=[...(c.checkIns||[]),{
+        id:Date.now().toString(),
+        date:new Date().toISOString().split('T')[0],
+        summary,compliance:state.forms.addCheckin.compliance,
+        barriers,clinicalNote
+      }];
+      await updateDoc(doc(db,'cases',caseId),{checkIns});
+      await refresh();
+      const updated=state.cases.find(x=>x.id===caseId);
+      set({modal:'view',modalData:updated,activeTab:'checkins'});
+      showToast('Check-in saved');
     }
     if(a==='save-improvement'){
       setForm('addImprovement',{
