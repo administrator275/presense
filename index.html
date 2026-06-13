@@ -285,7 +285,8 @@ onAuthStateChanged(auth,async(user)=>{
 });
 
 async function doLogin(){
-  const{email,password}=state.forms.login;
+  const email=document.getElementById('login-email')?.value?.trim()||'';
+  const password=document.getElementById('login-password')?.value||'';
   if(!email||!password)return;
   setForm('login',{busy:true,error:''});
   try{
@@ -459,8 +460,8 @@ function renderAuth(){
       <div class="auth-tagline">Behavioral Medicine Platform · CCL</div>
       <div class="auth-title">Sign in</div>
       ${f.error?`<div class="auth-error">${f.error}</div>`:''}
-      <div class="field"><label>Email</label><input type="email" id="login-email" value="${f.email}" placeholder="your@email.com"/></div>
-      <div class="field"><label>Password</label><input type="password" id="login-password" value="${f.password}" placeholder="••••••••"/></div>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="your@email.com"/></div>
+      <div class="field"><label>Password</label><input type="password" id="login-password" placeholder="••••••••"/></div>
       <button class="btn-primary" id="login-btn" ${f.busy?'disabled':''}>${f.busy?'Signing in…':'Sign in'}</button>
     </div>
   </div>`;
@@ -469,9 +470,8 @@ function renderAuth(){
 function attachAuthHandlers(){
   document.getElementById('login-btn')?.addEventListener('click',doLogin);
   document.getElementById('login-password')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
-  document.getElementById('login-email')?.addEventListener('input',e=>setForm('login',{email:e.target.value}));
-  document.getElementById('login-password')?.addEventListener('input',e=>setForm('login',{password:e.target.value}));
 }
+
 
 // ── APP SHELL ──────────────────────────────────────────
 function renderApp(){
